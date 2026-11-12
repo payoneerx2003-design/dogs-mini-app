@@ -91,7 +91,7 @@
             color: #111827;
         }
         
-        /* Live Ticker for Approved Withdrawals */
+        /* Live Ticker */
         .live-ticker {
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
@@ -105,7 +105,6 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            animation: fadeIn 0.5s ease-in-out;
         }
 
         .hero-card {
@@ -375,7 +374,7 @@
         </div>
     </div>
 
-    <!-- Live Withdrawal Ticker (Shows Approved Transactions on top of Dashboard) -->
+    <!-- Live Withdrawal Ticker -->
     <div id="liveTicker" class="live-ticker">
         <span>🚀</span> <span id="tickerText">Loading latest payouts...</span>
     </div>
@@ -395,17 +394,17 @@
             </div>
         </div>
 
-        <div class="section-title">Unlimited Earning Tasks (+20 DOGS Each)</div>
-        <div class="task-list" id="unlimitedTasksList">
-            <!-- Dynamically generated unlimited tasks -->
+        <div class="section-title">Featured Tasks (25 DOGS Each)</div>
+        <div class="task-list" id="homeTasksList">
+            <!-- First few tasks for quick access -->
         </div>
     </div>
 
-    <!-- TASKS TAB -->
+    <!-- TASKS TAB (1000+ Tasks Hub) -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">Unlimited Task Hub (+20 DOGS Each)</div>
+        <div class="section-title">1000+ Task Hub (+25 DOGS Each)</div>
         <div class="task-list" id="taskTabList">
-            <!-- Dynamically generated tasks -->
+            <!-- 1000+ tasks generated dynamically -->
         </div>
     </div>
 
@@ -546,7 +545,6 @@
         let balance = parseInt(localStorage.getItem('dogs_bal')) || 125;
         let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
         
-        // Initial fake live transactions pool
         let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [
             { id: 101, amount: 60000, address: 'UQBx7...9a2x', status: 'Approved' },
             { id: 102, amount: 10000, address: 'EQD3f...8b1k', status: 'Approved' },
@@ -563,7 +561,6 @@
         }
         updateDisplay();
 
-        // Rotate Live Ticker with fake/real approved withdrawals
         let tickerIndex = 0;
         function updateLiveTicker() {
             const approvedList = withdrawHistory.filter(i => i.status === 'Approved');
@@ -576,7 +573,7 @@
             document.getElementById('tickerText').innerText = `Payout Successful: ${item.amount} DOGS sent to ${item.address}`;
             tickerIndex++;
         }
-        setInterval(updateLiveTicker, 4000); // Rotates every 4 seconds
+        setInterval(updateLiveTicker, 4000);
 
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
@@ -586,31 +583,38 @@
             setTimeout(() => { t.style.display = 'none'; }, 2500);
         }
 
-        // Generate Unlimited Tasks (20 DOGS per task)
-        function renderUnlimitedTasks() {
-            const containers = [document.getElementById('unlimitedTasksList'), document.getElementById('taskTabList')];
-            containers.forEach(container => {
-                if (!container) return;
-                container.innerHTML = '';
-                for (let i = 1; i <= 15; i++) {
-                    container.innerHTML += `
-                        <div class="task-card">
-                            <div class="task-left">
-                                <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
-                                <div class="task-details">
-                                    <h4>Unlimited Partner Task #${i}</h4>
-                                    <p>+20 DOGS &bull; Watch & Claim</p>
-                                </div>
-                            </div>
-                            <button class="watch-btn" onclick="watchUnlimitedTask(20)">Watch</button>
-                        </div>
-                    `;
-                }
-            });
-        }
-        renderUnlimitedTasks();
+        // Generate 1000+ Tasks (25 DOGS per task)
+        function renderTasksHub() {
+            const homeList = document.getElementById('homeTasksList');
+            const taskTab = document.getElementById('taskTabList');
+            
+            if (homeList) homeList.innerHTML = '';
+            if (taskTab) taskTab.innerHTML = '';
 
-        function watchUnlimitedTask(reward) {
+            for (let i = 1; i <= 1000; i++) {
+                const taskHTML = `
+                    <div class="task-card">
+                        <div class="task-left">
+                            <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
+                            <div class="task-details">
+                                <h4>Partner Task #${i}</h4>
+                                <p>+25 DOGS &bull; Watch & Claim</p>
+                            </div>
+                        </div>
+                        <button class="watch-btn" onclick="watchTask(25)">Watch</button>
+                    </div>
+                `;
+                if (i <= 10 && homeList) {
+                    homeList.innerHTML += taskHTML;
+                }
+                if (taskTab) {
+                    taskTab.innerHTML += taskHTML;
+                }
+            }
+        }
+        renderTasksHub();
+
+        function watchTask(reward) {
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
                     show_12246297().then(() => {
@@ -723,7 +727,7 @@
             showToast("Invite link copied! +500 DOGS added instantly!");
         }
 
-        // Withdraw & Request Logic
+        // Withdraw Request
         function requestWithdraw() {
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
