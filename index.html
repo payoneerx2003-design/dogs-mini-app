@@ -228,28 +228,30 @@
         const tg = window.Telegram.WebApp;
         try { tg.expand(); } catch(e) {}
 
-        // Fetch User ID dynamically from Telegram WebApp
         let userId = "guest_user";
         let userName = "User";
+        let userHandle = "@user_" + Math.floor(Math.random() * 90000 + 10000);
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
             userId = String(user.id);
             userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "User";
+            if (user.username) userHandle = "@" + user.username;
             document.getElementById('userName').innerText = userName;
             document.getElementById('userAvatar').innerText = userName[0].toUpperCase();
             document.getElementById('refLinkText').innerText = `https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_${userId}`;
         }
 
-        // Unique Key per user ID so different accounts don't share balance
         const KEY_BAL = `dogs_bal_${userId}`;
         const KEY_EARNED = `dogs_earned_${userId}`;
         const KEY_ADS = `dogs_ads_watched_${userId}`;
+        const KEY_TASKS = `dogs_tasks_completed_${userId}`;
         const KEY_BANNED = `dogs_is_banned_${userId}`;
         const KEY_HISTORY = `dogs_withdraw_history_${userId}`;
+        const KEY_INVITES = `dogs_invite_list_${userId}`;
 
         let balance = parseInt(localStorage.getItem(KEY_BAL));
-        if (isNaN(balance)) balance = 0; // New users start with 0 balance
+        if (isNaN(balance)) balance = 0;
 
         let totalEarned = parseInt(localStorage.getItem(KEY_EARNED));
         if (isNaN(totalEarned)) totalEarned = 0;
@@ -257,12 +259,40 @@
         let adsWatched = parseInt(localStorage.getItem(KEY_ADS));
         if (isNaN(adsWatched)) adsWatched = 0;
 
+        let tasksCompleted = parseInt(localStorage.getItem(KEY_TASKS));
+        if (isNaN(tasksCompleted)) tasksCompleted = 0;
+
         let isBanned = localStorage.getItem(KEY_BANNED) === 'true';
         let withdrawHistory = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
         
-        let inviteList = JSON.parse(localStorage.getItem(`dogs_invite_list_${userId}`)) || [
-            { username: '@crypto_king99', tasks: 2, ads: 5, earned: 4500, commission: 225 }
-        ];
+        // Real clean invite list (No fake crypto_king99)
+        let inviteList = JSON.parse(localStorage.getItem(KEY_INVITES)) || [];
+
+        // Check URL startapp parameter for referral tracking (e.g. ?start=ref_12345)
+        const urlParams = new URLSearchParams(window.location.search);
+        // Telegram WebApp initData or startParam check
+        let startParam = "";
+        if (tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+            startParam = tg.initDataUnsafe.start_param;
+        } else {
+            const hash = window.location.hash;
+            if (hash.includes("ref_")) {
+                startParam = hash.substring(hash.indexOf("ref_"));
+            }
+        }
+
+        if (startParam && startParam.startsWith("ref_")) {
+            let inviterId = startParam.replace("ref_", "");
+            if (inviterId !== userId) {
+                let inviterKey = `dogs_invite_list_${inviterId}`;
+                let inviterList = JSON.parse(localStorage.getItem(inviterKey)) || [];
+                // Add current user if not already in inviter's list
+                if (!inviterList.some(item => item.username === userHandle)) {
+                    inviterList.push({ username: userHandle, tasks: 0, ads: 0, earned: 0, commission: 0, rewarded: false });
+                    localStorage.setItem(inviterKey, JSON.stringify(inviterList));
+                }
+            }
+        }
 
         if (isBanned) {
             document.body.innerHTML = `<div style="text-align:center; padding:50px; font-family:sans-serif;"><h2>❌ Your account has been banned by Admin.</h2></div>`;
@@ -275,8 +305,10 @@
             localStorage.setItem(KEY_BAL, balance);
             localStorage.setItem(KEY_EARNED, totalEarned);
             localStorage.setItem(KEY_ADS, adsWatched);
+            localStorage.setItem(KEY_TASKS, tasksCompleted);
             localStorage.setItem(KEY_BANNED, isBanned);
             localStorage.setItem(KEY_HISTORY, JSON.stringify(withdrawHistory));
+            localStorage.setItem(KEY_INVITES, JSON.stringify(inviteList));
         }
 
         function updateDisplay() {
@@ -332,7 +364,9 @@
         renderTasksHub();
 
         function watchTask(reward) {
+            tasksCompleted++;
             adsWatched++;
+            
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => { creditReward(reward); }).catch(() => { creditReward(reward); });
             } else {
@@ -403,9 +437,20 @@
 
         function renderInviteList() {
             const list = document.getElementById('inviteFriendsList');
+            if (inviteList.length === 0) {
+                list.innerHTML = `<p style="font-size:12px; color:#9ca3af; text-align:center; padding:10px;">No referrals yet. Share your link!</p>`;
+                return;
+            }
             list.innerHTML = '';
             inviteList.forEach(f => {
                 let qualified = f.tasks >= 2 && f.ads >= 5;
+                if (qualified && !f.rewarded) {
+                    balance += 500;
+                    totalEarned += 500;
+                    f.rewarded = true;
+                    saveData();
+                    showToast("Referral Bonus: +500 DOGS added!");
+                }
                 list.innerHTML += `
                     <div class="invite-item">
                         <div>
