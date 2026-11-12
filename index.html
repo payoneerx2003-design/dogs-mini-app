@@ -404,7 +404,7 @@
         <div class="task-list" id="taskTabList"></div>
     </div>
 
-    <!-- INVITE TAB (With Username list & 5% commission) -->
+    <!-- INVITE TAB -->
     <div id="tab-invite" class="tab-content">
         <div class="section-title">Referral Program & 5% Commission</div>
         <div class="invite-box">
@@ -416,9 +416,7 @@
         </div>
 
         <div class="section-title">Your Invited Friends (5% Commission Active)</div>
-        <div class="invite-list" id="inviteFriendsList">
-            <!-- Dynamically populated referral list with usernames -->
-        </div>
+        <div class="invite-list" id="inviteFriendsList"></div>
     </div>
 
     <!-- GAMES TAB -->
@@ -535,7 +533,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let botUsername = "DogsDistributeBot"; // আপনার টেলিগ্রাম বটের ইউজারনেম এখানে সেট করুন
+        let botUsername = "DogsDistributeBot";
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
@@ -555,7 +553,6 @@
             { id: 104, amount: 3500, address: 'UQCw9...1l3z', status: 'Approved' }
         ];
 
-        // Simulated invited friends list with 5% commission tracking
         let inviteList = JSON.parse(localStorage.getItem('dogs_invite_list')) || [
             { username: '@crypto_king99', earned: 4500, commission: 225 },
             { username: '@ton_holder_bd', earned: 12000, commission: 600 },
@@ -594,7 +591,6 @@
             setTimeout(() => { t.style.display = 'none'; }, 2500);
         }
 
-        // Generate exactly 100 Tasks (35 DOGS per task)
         function renderTasksHub() {
             const homeList = document.getElementById('homeTasksList');
             const taskTab = document.getElementById('taskTabList');
@@ -642,7 +638,6 @@
             }
         }
 
-        // Render Invite List with Usernames & 5% Commission
         function renderInviteList() {
             const listContainer = document.getElementById('inviteFriendsList');
             if (!listContainer) return;
@@ -667,7 +662,6 @@
             });
         }
 
-        // Games Logic
         function playSpin() {
             if (balance < 10) { showToast("Need min 10 DOGS!", true); return; }
             balance -= 10;
@@ -763,7 +757,6 @@
             showToast("Invite link copied! +500 DOGS added instantly!");
         }
 
-        // Withdraw Request with 5% fee calculation
         function requestWithdraw() {
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
@@ -787,7 +780,6 @@
             document.getElementById('withdrawAmountInput').value = "";
         }
 
-        // Admin Panel
         function openAdminPrompt() {
             const pwd = prompt("Enter Admin Password:");
             if (pwd === "ALLAHV3dk41sw") {
