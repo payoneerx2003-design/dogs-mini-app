@@ -170,7 +170,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .task-list, .history-list, .admin-req-list {
+        .task-list, .history-list, .admin-req-list, .invite-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -178,7 +178,7 @@
             overflow-y: auto;
             padding-right: 2px;
         }
-        .task-card, .history-card, .req-card {
+        .task-card, .history-card, .req-card, .invite-item {
             background: #ffffff;
             border-radius: 16px;
             padding: 12px 14px;
@@ -394,25 +394,30 @@
             </div>
         </div>
 
-        <div class="section-title">Featured Tasks (30 DOGS Each)</div>
+        <div class="section-title">Featured Tasks (35 DOGS Each)</div>
         <div class="task-list" id="homeTasksList"></div>
     </div>
 
-    <!-- TASKS TAB (200 Tasks Hub) -->
+    <!-- TASKS TAB (100 Tasks Hub) -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">200 Task Hub (+30 DOGS Each)</div>
+        <div class="section-title">100 Task Hub (+35 DOGS Each)</div>
         <div class="task-list" id="taskTabList"></div>
     </div>
 
-    <!-- INVITE TAB -->
+    <!-- INVITE TAB (With Username list & 5% commission) -->
     <div id="tab-invite" class="tab-content">
-        <div class="section-title">Referral Program</div>
+        <div class="section-title">Referral Program & 5% Commission</div>
         <div class="invite-box">
             <div style="font-size: 36px; margin-bottom: 8px;">👥</div>
             <h3>Invite Friends</h3>
-            <p>Get instant <strong>500 DOGS</strong> for every friend who joins via your link!</p>
+            <p>Get instant <strong>500 DOGS</strong> + earn <strong>5% commission</strong> from your friends' earnings!</p>
             <div class="ref-link-box" id="refLinkText">https://t.me/DogsDistributeBot?start=ref_183492</div>
             <button class="primary-btn" onclick="copyRefLink()">Copy Invite Link</button>
+        </div>
+
+        <div class="section-title">Your Invited Friends (5% Commission Active)</div>
+        <div class="invite-list" id="inviteFriendsList">
+            <!-- Dynamically populated referral list with usernames -->
         </div>
     </div>
 
@@ -530,12 +535,14 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        let botUsername = "DogsDistributeBot"; // আপনার টেলিগ্রাম বটের ইউজারনেম এখানে সেট করুন
+
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
             const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "Umar Ahmed Sakib";
             document.getElementById('userName').innerText = fullName;
             document.getElementById('userAvatar').innerText = (user.first_name || "U")[0].toUpperCase();
-            document.getElementById('refLinkText').innerText = `https://t.me/DogsDistributeBot?start=ref_${user.id || '2003'}`;
+            document.getElementById('refLinkText').innerText = `https://t.me/${botUsername}?start=ref_${user.id || '2003'}`;
         }
 
         let balance = parseInt(localStorage.getItem('dogs_bal')) || 105753;
@@ -548,11 +555,19 @@
             { id: 104, amount: 3500, address: 'UQCw9...1l3z', status: 'Approved' }
         ];
 
+        // Simulated invited friends list with 5% commission tracking
+        let inviteList = JSON.parse(localStorage.getItem('dogs_invite_list')) || [
+            { username: '@crypto_king99', earned: 4500, commission: 225 },
+            { username: '@ton_holder_bd', earned: 12000, commission: 600 },
+            { username: '@sakib_gamer', earned: 2000, commission: 100 }
+        ];
+
         function updateDisplay() {
             document.getElementById('balanceAmount').innerText = balance;
             document.getElementById('walletTotalBalance').innerText = balance;
             document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
             updateLiveTicker();
+            renderInviteList();
             renderAdminRequests();
         }
         updateDisplay();
@@ -579,7 +594,7 @@
             setTimeout(() => { t.style.display = 'none'; }, 2500);
         }
 
-        // Generate 200 Fast Tasks (30 DOGS per task)
+        // Generate exactly 100 Tasks (35 DOGS per task)
         function renderTasksHub() {
             const homeList = document.getElementById('homeTasksList');
             const taskTab = document.getElementById('taskTabList');
@@ -587,20 +602,20 @@
             if (homeList) homeList.innerHTML = '';
             if (taskTab) taskTab.innerHTML = '';
 
-            for (let i = 1; i <= 200; i++) {
+            for (let i = 1; i <= 100; i++) {
                 const taskHTML = `
                     <div class="task-card">
                         <div class="task-left">
                             <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
                             <div class="task-details">
                                 <h4>Partner Task #${i}</h4>
-                                <p>+30 DOGS &bull; Watch & Claim</p>
+                                <p>+35 DOGS &bull; Watch & Claim</p>
                             </div>
                         </div>
-                        <button class="watch-btn" onclick="watchTask(30)">Watch</button>
+                        <button class="watch-btn" onclick="watchTask(35)">Watch</button>
                     </div>
                 `;
-                if (i <= 8 && homeList) {
+                if (i <= 6 && homeList) {
                     homeList.innerHTML += taskHTML;
                 }
                 if (taskTab) {
@@ -625,6 +640,31 @@
             } else {
                 showToast("Ad loading, please wait...", true);
             }
+        }
+
+        // Render Invite List with Usernames & 5% Commission
+        function renderInviteList() {
+            const listContainer = document.getElementById('inviteFriendsList');
+            if (!listContainer) return;
+            if (inviteList.length === 0) {
+                listContainer.innerHTML = `<p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No referrals yet. Share your link!</p>`;
+                return;
+            }
+            listContainer.innerHTML = '';
+            inviteList.forEach(friend => {
+                listContainer.innerHTML += `
+                    <div class="invite-item">
+                        <div>
+                            <h4 style="font-size: 14px; color: #1f2937;">${friend.username}</h4>
+                            <p style="font-size: 11px; color: #6b7280;">Friend earned: ${friend.earned} DOGS</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 12px; font-weight: 700; color: #059669;">+${friend.commission} DOGS</span>
+                            <p style="font-size: 10px; color: #9ca3af;">5% Commission</p>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         // Games Logic
