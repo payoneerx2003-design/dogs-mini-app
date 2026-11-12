@@ -394,18 +394,14 @@
             </div>
         </div>
 
-        <div class="section-title">Featured Tasks (25 DOGS Each)</div>
-        <div class="task-list" id="homeTasksList">
-            <!-- First few tasks for quick access -->
-        </div>
+        <div class="section-title">Featured Tasks (30 DOGS Each)</div>
+        <div class="task-list" id="homeTasksList"></div>
     </div>
 
-    <!-- TASKS TAB (1000+ Tasks Hub) -->
+    <!-- TASKS TAB (200 Tasks Hub) -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">1000+ Task Hub (+25 DOGS Each)</div>
-        <div class="task-list" id="taskTabList">
-            <!-- 1000+ tasks generated dynamically -->
-        </div>
+        <div class="section-title">200 Task Hub (+30 DOGS Each)</div>
+        <div class="task-list" id="taskTabList"></div>
     </div>
 
     <!-- INVITE TAB -->
@@ -464,7 +460,7 @@
         <div class="section-title">Wallet & Withdrawal</div>
         <div class="wallet-card">
             <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">
-                Minimum withdrawal limit is <strong>5,000 DOGS</strong>. Payouts sent to your TON wallet.
+                Minimum withdrawal limit is <strong>3,500 DOGS</strong> (5% processing fee applies). Payouts sent to your TON wallet.
             </p>
             <div class="input-group">
                 <label>TON Wallet Address</label>
@@ -472,7 +468,7 @@
             </div>
             <div class="input-group">
                 <label>Amount to Withdraw</label>
-                <input type="number" id="withdrawAmountInput" placeholder="Minimum 5000">
+                <input type="number" id="withdrawAmountInput" placeholder="Minimum 3500">
             </div>
             <button class="primary-btn" onclick="requestWithdraw()">Request Withdrawal</button>
         </div>
@@ -542,14 +538,14 @@
             document.getElementById('refLinkText').innerText = `https://t.me/DogsDistributeBot?start=ref_${user.id || '2003'}`;
         }
 
-        let balance = parseInt(localStorage.getItem('dogs_bal')) || 125;
-        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
+        let balance = parseInt(localStorage.getItem('dogs_bal')) || 105753;
+        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 29305;
         
         let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [
             { id: 101, amount: 60000, address: 'UQBx7...9a2x', status: 'Approved' },
             { id: 102, amount: 10000, address: 'EQD3f...8b1k', status: 'Approved' },
             { id: 103, amount: 6657, address: 'UQCt2...4m9p', status: 'Approved' },
-            { id: 104, amount: 5000, address: 'UQCw9...1l3z', status: 'Approved' }
+            { id: 104, amount: 3500, address: 'UQCw9...1l3z', status: 'Approved' }
         ];
 
         function updateDisplay() {
@@ -565,7 +561,7 @@
         function updateLiveTicker() {
             const approvedList = withdrawHistory.filter(i => i.status === 'Approved');
             if (approvedList.length === 0) {
-                document.getElementById('tickerText').innerText = "Live Payout: 5,000 DOGS successfully sent to TON wallet!";
+                document.getElementById('tickerText').innerText = "Live Payout: 3,500 DOGS successfully sent to TON wallet!";
                 return;
             }
             if (tickerIndex >= approvedList.length) tickerIndex = 0;
@@ -583,7 +579,7 @@
             setTimeout(() => { t.style.display = 'none'; }, 2500);
         }
 
-        // Generate 1000+ Tasks (25 DOGS per task)
+        // Generate 200 Fast Tasks (30 DOGS per task)
         function renderTasksHub() {
             const homeList = document.getElementById('homeTasksList');
             const taskTab = document.getElementById('taskTabList');
@@ -591,20 +587,20 @@
             if (homeList) homeList.innerHTML = '';
             if (taskTab) taskTab.innerHTML = '';
 
-            for (let i = 1; i <= 1000; i++) {
+            for (let i = 1; i <= 200; i++) {
                 const taskHTML = `
                     <div class="task-card">
                         <div class="task-left">
                             <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
                             <div class="task-details">
                                 <h4>Partner Task #${i}</h4>
-                                <p>+25 DOGS &bull; Watch & Claim</p>
+                                <p>+30 DOGS &bull; Watch & Claim</p>
                             </div>
                         </div>
-                        <button class="watch-btn" onclick="watchTask(25)">Watch</button>
+                        <button class="watch-btn" onclick="watchTask(30)">Watch</button>
                     </div>
                 `;
-                if (i <= 10 && homeList) {
+                if (i <= 8 && homeList) {
                     homeList.innerHTML += taskHTML;
                 }
                 if (taskTab) {
@@ -727,24 +723,27 @@
             showToast("Invite link copied! +500 DOGS added instantly!");
         }
 
-        // Withdraw Request
+        // Withdraw Request with 5% fee calculation
         function requestWithdraw() {
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
 
             if (!address || address.length < 10) { showToast("Enter a valid TON address!", true); return; }
-            if (!amount || amount < 5000) { showToast("Minimum 5,000 DOGS required!", true); return; }
+            if (!amount || amount < 3500) { showToast("Minimum 3,500 DOGS required!", true); return; }
             if (amount > balance) { showToast("Insufficient balance!", true); return; }
+
+            const fee = Math.round(amount * 0.05);
+            const netAmount = amount - fee;
 
             balance -= amount;
             localStorage.setItem('dogs_bal', balance);
 
-            const newReq = { id: Date.now(), amount, address, status: 'Pending' };
+            const newReq = { id: Date.now(), amount: netAmount, original: amount, fee, address, status: 'Pending' };
             withdrawHistory.unshift(newReq);
             localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
 
             updateDisplay();
-            showToast("Withdrawal requested successfully!");
+            showToast(`Withdrawal requested! (${fee} DOGS fee deducted)`);
             document.getElementById('withdrawAmountInput').value = "";
         }
 
@@ -782,7 +781,7 @@
                 reqList.innerHTML += `
                     <div class="req-card">
                         <div>
-                            <h4>${req.amount} DOGS</h4>
+                            <h4>${req.amount} DOGS (Fee: ${req.fee})</h4>
                             <p style="word-break:break-all;">${req.address}</p>
                         </div>
                         <div style="display:flex; gap:6px;">
@@ -798,7 +797,7 @@
             if (!req) return;
             req.status = status;
             if (status === 'Rejected') {
-                balance += req.amount;
+                balance += (req.original || (req.amount + req.fee));
                 localStorage.setItem('dogs_bal', balance);
                 showToast("Rejected & amount refunded.");
             } else {
