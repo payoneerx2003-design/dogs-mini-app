@@ -22,7 +22,7 @@
             background-color: #fcf8f5;
             color: #1e1e1e;
             min-height: 100vh;
-            padding: 15px 15px 90px 15px;
+            padding: 15px 15px 95px 15px;
         }
         .top-bar {
             display: flex;
@@ -255,71 +255,34 @@
         .game-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 6px; }
         .game-desc { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
         .spin-wheel {
-            width: 90px;
-            height: 90px;
+            width: 90px; height: 90px;
             background: linear-gradient(135deg, #f59e0b, #ec4899);
             border-radius: 50%;
             margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white;
             box-shadow: 0 4px 15px rgba(245,158,11,0.4);
             transition: transform 1s ease-in-out;
         }
         .coin {
-            width: 70px;
-            height: 70px;
-            background: #fbbf24;
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #78350f;
-            border: 3px dashed #d97706;
+            width: 70px; height: 70px; background: #fbbf24; border-radius: 50%;
+            margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: bold; color: #78350f; border: 3px dashed #d97706;
         }
         .dice-box {
-            width: 70px;
-            height: 70px;
-            background: #ffffff;
-            border: 2px solid #3b82f6;
-            border-radius: 14px;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: #2563eb;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(59,130,246,0.2);
+            width: 70px; height: 70px; background: #ffffff; border: 2px solid #3b82f6;
+            border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; color: #2563eb; font-weight: bold;
         }
         .plane-box {
-            width: 100%;
-            height: 70px;
-            background: #f3f4f6;
-            border-radius: 12px;
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; height: 70px; background: #f3f4f6; border-radius: 12px;
+            margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
             font-size: 26px;
-            position: relative;
-            overflow: hidden;
         }
         .btn-row { display: flex; gap: 8px; justify-content: center; }
         .game-action-btn {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
+            background: #7c3aed; color: white; border: none; padding: 8px 16px;
+            border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer;
         }
         .game-action-btn.secondary { background: #3b82f6; }
 
@@ -332,36 +295,17 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             margin-bottom: 20px;
         }
-        .input-group {
-            margin-bottom: 14px;
-            text-align: left;
-        }
-        .input-group label {
-            display: block;
-            font-size: 12px;
-            color: #4b5563;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
+        .input-group { margin-bottom: 14px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #4b5563; margin-bottom: 5px; font-weight: 600; }
         .input-group input {
-            width: 100%;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 11px;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-            color: #111827;
+            width: 100%; background: #f9fafb; border: 1px solid #e5e7eb;
+            padding: 11px; border-radius: 10px; font-size: 13px; outline: none; color: #111827;
         }
 
         /* Admin Panel */
         .admin-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
-            border: 2px solid #dc2626;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.1);
-            margin-bottom: 20px;
+            background: #ffffff; border-radius: 20px; padding: 20px;
+            border: 2px solid #dc2626; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.1); margin-bottom: 20px;
         }
         .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .status-pending { background: #fef3c7; color: #d97706; }
@@ -370,45 +314,21 @@
 
         /* Bottom Navigation Bar */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #ffffff;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 100;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff;
+            border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around;
+            padding: 10px 0; z-index: 100; box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
         }
         .nav-btn {
-            background: none;
-            border: none;
-            color: #9ca3af;
-            font-size: 11px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
+            background: none; border: none; color: #9ca3af; font-size: 11px;
+            display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
         }
         .nav-btn.active { color: #f59e0b; font-weight: 600; }
         .nav-icon { font-size: 20px; }
         .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #10b981;
-            color: white;
-            padding: 10px 22px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            display: none;
-            z-index: 999;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #10b981; color: white; padding: 10px 22px; border-radius: 30px;
+            font-size: 13px; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: none; z-index: 999;
         }
     </style>
 </head>
@@ -433,7 +353,7 @@
         <div class="user-avatar" id="userAvatar">U</div>
         <div class="user-info">
             <span>Welcome back</span>
-            <h3 id="userName">Umar Ahmed</h3>
+            <h3 id="userName">Umar Ahmed Sakib</h3>
         </div>
     </div>
 
@@ -452,59 +372,21 @@
             </div>
         </div>
 
-        <div class="section-title">Quick Tasks (10-20 DOGS)</div>
-        <div class="task-list">
-            <div class="task-card">
-                <div class="task-left">
-                    <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
-                    <div class="task-details">
-                        <h4>Watch Sponsor Ad #1</h4>
-                        <p>+15 DOGS &bull; Instant Reward</p>
-                    </div>
-                </div>
-                <button class="watch-btn" onclick="watchTaskAd(15)">Claim</button>
-            </div>
-            <div class="task-card">
-                <div class="task-left">
-                    <div class="task-logo" style="background:#ecfdf5; color:#059669;">🔥</div>
-                    <div class="task-details">
-                        <h4>Watch Sponsor Ad #2</h4>
-                        <p>+20 DOGS &bull; Instant Reward</p>
-                    </div>
-                </div>
-                <button class="watch-btn" onclick="watchTaskAd(20)">Claim</button>
-            </div>
+        <div class="section-title">Unlimited Earning Tasks (+20 DOGS Each)</div>
+        <div class="task-list" id="unlimitedTasksList">
+            <!-- Dynamically generated unlimited tasks -->
         </div>
     </div>
 
     <!-- TASKS TAB -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">Daily Earning Tasks</div>
-        <div class="task-list">
-            <div class="task-card">
-                <div class="task-left">
-                    <div class="task-logo" style="background:#fef3c7; color:#d97706;">🎁</div>
-                    <div class="task-details">
-                        <h4>Bonus Task A</h4>
-                        <p>+10 DOGS</p>
-                    </div>
-                </div>
-                <button class="watch-btn" onclick="watchTaskAd(10)">Start</button>
-            </div>
-            <div class="task-card">
-                <div class="task-left">
-                    <div class="task-logo" style="background:#fef2f2; color:#dc2626;">⭐</div>
-                    <div class="task-details">
-                        <h4>Bonus Task B</h4>
-                        <p>+15 DOGS</p>
-                    </div>
-                </div>
-                <button class="watch-btn" onclick="watchTaskAd(15)">Start</button>
-            </div>
+        <div class="section-title">Unlimited Task Hub (+20 DOGS Each)</div>
+        <div class="task-list" id="taskTabList">
+            <!-- Dynamically generated tasks -->
         </div>
     </div>
 
-    <!-- INVITE TAB (Instant 500 DOGS) -->
+    <!-- INVITE TAB -->
     <div id="tab-invite" class="tab-content">
         <div class="section-title">Referral Program</div>
         <div class="invite-box">
@@ -516,19 +398,17 @@
         </div>
     </div>
 
-    <!-- GAMES TAB (Spin, Coin Flip, Dice, Crash) -->
+    <!-- GAMES TAB -->
     <div id="tab-games" class="tab-content">
         <div class="section-title">Play & Win DOGS</div>
         
-        <!-- Lucky Spin -->
         <div class="game-container">
             <div class="game-title">🎰 Lucky Spin Wheel</div>
-            <div class="game-desc">Spin the wheel to win instant rewards!</div>
+            <div class="game-desc">Spin to win instant rewards!</div>
             <div class="spin-wheel" id="wheelIcon">🎡</div>
             <button class="game-action-btn" onclick="playSpin()">Spin Now</button>
         </div>
 
-        <!-- Coin Flip -->
         <div class="game-container">
             <div class="game-title">🪙 Coin Flip (Entry: 50 DOGS)</div>
             <div class="game-desc">Guess Head or Tail & Win Double (100 DOGS)!</div>
@@ -539,7 +419,6 @@
             </div>
         </div>
 
-        <!-- Dice Roll -->
         <div class="game-container">
             <div class="game-title">🎲 Dice Roll (Entry: 20 DOGS)</div>
             <div class="game-desc">Roll high to win 30-50 DOGS!</div>
@@ -547,10 +426,9 @@
             <button class="game-action-btn" onclick="playDice()">Roll Dice</button>
         </div>
 
-        <!-- Crash Bet -->
         <div class="game-container">
             <div class="game-title">🚀 Crash Bet (Entry: 50 DOGS)</div>
-            <div class="game-desc">Predict Plane Direction (Up / Down) to win 100-200 DOGS!</div>
+            <div class="game-desc">Predict Plane Direction to win 100-200 DOGS!</div>
             <div class="plane-box" id="planeBox">✈️ ---</div>
             <div class="btn-row">
                 <button class="game-action-btn" onclick="playCrash('up')">Up 🚀</button>
@@ -577,9 +455,15 @@
             <button class="primary-btn" onclick="requestWithdraw()">Request Withdrawal</button>
         </div>
 
-        <div class="section-title">Withdrawal History</div>
+        <div class="section-title">Total Balance Summary</div>
+        <div class="wallet-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; text-align: center; padding: 18px;">
+            <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase;">Available Balance</div>
+            <div style="font-size: 30px; font-weight: 800; margin-top: 5px;"><span id="walletTotalBalance">125</span> DOGS</div>
+        </div>
+
+        <div class="section-title">Withdrawal History & Live Transactions</div>
         <div class="history-list" id="userHistoryList">
-            <p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No history yet.</p>
+            <!-- History items including fake ones -->
         </div>
     </div>
 
@@ -635,18 +519,24 @@
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
-            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "DOGS User";
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "Umar Ahmed Sakib";
             document.getElementById('userName').innerText = fullName;
-            document.getElementById('userAvatar').innerText = (user.first_name || "D")[0].toUpperCase();
+            document.getElementById('userAvatar').innerText = (user.first_name || "U")[0].toUpperCase();
             document.getElementById('refLinkText').innerText = `https://t.me/DogsDistributeBot?start=ref_${user.id || '2003'}`;
         }
 
         let balance = parseInt(localStorage.getItem('dogs_bal')) || 125;
         let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
-        let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [];
+        let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [
+            { id: 101, amount: 60000, address: 'UQBx7...9a2x', status: 'Approved' },
+            { id: 102, amount: 10000, address: 'EQD3f...8b1k', status: 'Approved' },
+            { id: 103, amount: 6657, address: 'UQCt2...4m9p', status: 'Approved' },
+            { id: 104, amount: 5000, address: 'UQCw9...1l3z', status: 'Approved' }
+        ];
 
         function updateDisplay() {
             document.getElementById('balanceAmount').innerText = balance;
+            document.getElementById('walletTotalBalance').innerText = balance;
             document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
             renderHistory();
             renderAdminRequests();
@@ -661,22 +551,46 @@
             setTimeout(() => { t.style.display = 'none'; }, 2500);
         }
 
-        // Task Ad Trigger (Click opens ad, claim opens ad)
-        function watchTaskAd(reward) {
+        // Generate Unlimited Tasks (20 DOGS per task)
+        function renderUnlimitedTasks() {
+            const containers = [document.getElementById('unlimitedTasksList'), document.getElementById('taskTabList')];
+            containers.forEach(container => {
+                if (!container) return;
+                container.innerHTML = '';
+                for (let i = 1; i <= 15; i++) {
+                    container.innerHTML += `
+                        <div class="task-card">
+                            <div class="task-left">
+                                <div class="task-logo" style="background:#eff6ff; color:#2563eb;">⚡</div>
+                                <div class="task-details">
+                                    <h4>Unlimited Partner Task #${i}</h4>
+                                    <p>+20 DOGS &bull; Watch & Claim</p>
+                                </div>
+                            </div>
+                            <button class="watch-btn" onclick="watchUnlimitedTask(20)">Watch</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+        renderUnlimitedTasks();
+
+        // Monetag Ad Trigger for Tasks (Click opens ad, claim opens ad)
+        function watchUnlimitedTask(reward) {
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
-                    // Claim monetization ad trigger
+                    // Second monetization ad trigger on claim
                     show_12246297().then(() => {
                         balance += reward;
                         totalEarned += reward;
                         localStorage.setItem('dogs_bal', balance);
                         localStorage.setItem('dogs_earned', totalEarned);
                         updateDisplay();
-                        showToast(`Task Complete! +${reward} DOGS Added.`);
+                        showToast(`Task Verified! +${reward} DOGS Added.`);
                     }).catch(() => { showToast("Claim ad closed.", true); });
                 }).catch(() => { showToast("Ad skipped.", true); });
             } else {
-                showToast("Ad loading, try again...", true);
+                showToast("Ad loading, please wait...", true);
             }
         }
 
@@ -734,7 +648,7 @@
 
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
-                    const win = diceVal * 10; // 30 to 60
+                    const win = diceVal * 10;
                     balance += win; totalEarned += win;
                     localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
                     updateDisplay();
@@ -754,7 +668,7 @@
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
                     if (prediction === actual) {
-                        const win = Math.floor(Math.random() * 101) + 100; // 100-200
+                        const win = Math.floor(Math.random() * 101) + 100;
                         balance += win; totalEarned += win;
                         showToast(`Crash Won! +${win} DOGS`);
                     } else {
@@ -767,7 +681,6 @@
         }
 
         function copyRefLink() {
-            // Instant 500 DOGS reward on copy/invite action
             balance += 500; totalEarned += 500;
             localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
             updateDisplay();
@@ -800,10 +713,6 @@
 
         function renderHistory() {
             const list = document.getElementById('userHistoryList');
-            if (withdrawHistory.length === 0) {
-                list.innerHTML = `<p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No history yet.</p>`;
-                return;
-            }
             list.innerHTML = '';
             withdrawHistory.forEach(item => {
                 let badge = item.status === 'Approved' ? 'status-approved' : (item.status === 'Rejected' ? 'status-rejected' : 'status-pending');
