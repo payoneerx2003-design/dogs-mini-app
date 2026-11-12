@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOGS Ecosystem - Claim Portal</title>
+    <title>Free Unlimited DOGS</title>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <!-- Monetag Main Tag -->
     <script src='//libtl.com/sdk.js' data-zone='12246297' data-sdk='show_12246297'></script>
@@ -16,162 +19,396 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: #ffffff;
+            background-color: #fcf8f5;
+            color: #1e1e1e;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 15px 15px 90px 15px;
         }
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-        .logo-box {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
-        }
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
-        }
-        .subtitle {
-            color: #94a3b8;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .balance-card {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .balance-title {
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-        .balance-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #f8fafc;
-        }
-        .tasks-section {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #cbd5e1;
-            margin-bottom: 10px;
-        }
-        .task-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 12px 15px;
+        .top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all 0.2s ease;
+            margin-bottom: 18px;
         }
-        .task-info h4 {
-            font-size: 14px;
-            color: #f1f5f9;
-            margin-bottom: 2px;
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 18px;
         }
-        .task-info p {
-            font-size: 12px;
-            color: #38bdf8;
-            font-weight: 600;
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
-        .claim-btn {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
+        .top-right-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .pill-btn {
+            background: #f1eae2;
             border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s ease, background 0.2s;
-            box-shadow: 0 4px 12px rgba(59, 130, 246,.3);
+            color: #4b5563;
         }
-        .claim-btn:active {
-            transform: scale(0.95);
+        .user-welcome {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
         }
-        .footer-note {
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .user-info span {
+            font-size: 12px;
+            color: #9ca3af;
+            display: block;
+        }
+        .user-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .hero-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #9333ea 100%);
+            border-radius: 24px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-top {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        .balance-num {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .balance-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-earn {
+            flex: 1;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #111827;
+            border: none;
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+        .btn-withdraw {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .task-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f3f4f6;
+        }
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .task-logo {
+            width: 44px;
+            height: 44px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .task-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        .task-details p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .watch-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #111827;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
             font-size: 11px;
-            color: #64748b;
-            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+        .nav-btn.active {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        .nav-icon {
+            font-size: 20px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 999;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="logo-box">🐕</div>
-        <h1>DOGS Community</h1>
-        <p class="subtitle">Complete micro-tasks to earn rewards</p>
+    <div id="toast" class="toast">Reward Credited!</div>
 
-        <div class="balance-card">
-            <div class="balance-title">Total Balance</div>
-            <div class="balance-value" id="balance">0.00 DOGS</div>
+    <!-- Top Header -->
+    <div class="top-bar">
+        <div class="brand-box">
+            <div class="brand-icon">🐕</div>
+            <span>Free DOGS</span>
         </div>
+        <div class="top-right-btns">
+            <button class="pill-btn">🌐 EN</button>
+            <button class="pill-btn">🎧 Support</button>
+        </div>
+    </div>
 
-        <div class="tasks-section">
-            <div class="section-title">Available Tasks</div>
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>Watch Sponsor Ad</h4>
-                    <p>+50.00 DOGS</p>
+    <!-- User Greeting -->
+    <div class="user-welcome">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-info">
+            <span>Welcome back</span>
+            <h3 id="userName">Umar Ahmed</h3>
+        </div>
+    </div>
+
+    <!-- Hero Balance Card -->
+    <div class="hero-card">
+        <div class="hero-top">
+            <span>🐕</span>
+            <span>Your balance</span>
+        </div>
+        <div class="balance-num"><span id="balanceAmount">5</span> DOGS</div>
+        <div class="balance-sub" id="totalEarned">5 DOGS earned in total</div>
+        <div class="hero-buttons">
+            <button class="btn-earn" onclick="triggerAd(50)">Earn more</button>
+            <button class="btn-withdraw" onclick="alert('Minimum withdrawal is 5,000 DOGS!')">Withdraw</button>
+        </div>
+    </div>
+
+    <!-- Tasks Section -->
+    <div class="section-title">Available Tasks</div>
+    <div class="task-list">
+        
+        <div class="task-card">
+            <div class="task-left">
+                <div class="task-logo" style="background:#eff6ff; color:#2563eb;">A</div>
+                <div class="task-details">
+                    <h4>Adsgram</h4>
+                    <p>+20 DOGS &bull; 200/200 left today</p>
                 </div>
-                <button class="claim-btn" onclick="triggerAd()">Start</button>
             </div>
+            <button class="watch-btn" onclick="triggerAd(20)">Watch</button>
         </div>
 
-        <div class="footer-note">Secure WebApp Powered by Telegram</div>
+        <div class="task-card">
+            <div class="task-left">
+                <div class="task-logo" style="background:#ecfdf5; color:#059669;">ê</div>
+                <div class="task-details">
+                    <h4>Monetag</h4>
+                    <p>+20 DOGS &bull; 2000/2000 left today</p>
+                </div>
+            </div>
+            <button class="watch-btn" onclick="triggerAd(20)">Watch</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-left">
+                <div class="task-logo" style="background:#fef2f2; color:#dc2626;">R</div>
+                <div class="task-details">
+                    <h4>RichAds</h4>
+                    <p>+30 DOGS &bull; 500/500 left today</p>
+                </div>
+            </div>
+            <button class="watch-btn" onclick="triggerAd(30)">Watch</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-left">
+                <div class="task-logo" style="background:#fef3c7; color:#d97706;">⚡</div>
+                <div class="task-details">
+                    <h4>Daily Bonus Pack</h4>
+                    <p>+100 DOGS &bull; 1/1 left today</p>
+                </div>
+            </div>
+            <button class="watch-btn" onclick="triggerAd(100)">Watch</button>
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <button class="nav-btn active">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button class="nav-btn" onclick="alert('Tasks section is active above!')">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-btn" onclick="alert('Invite friends to earn 10% commission!')">
+            <span class="nav-icon">👥</span>
+            <span>Invite</span>
+        </button>
+        <button class="nav-btn" onclick="alert('Games coming soon!')">
+            <span class="nav-icon">🎮</span>
+            <span>Games</span>
+        </button>
+        <button class="nav-btn" onclick="alert('Minimum 5,000 DOGS required to withdraw.')">
+            <span class="nav-icon">👛</span>
+            <span>Wallet</span>
+        </button>
     </div>
 
     <script>
-        let currentBalance = 0.0;
+        // Telegram WebApp Setup
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-        function triggerAd() {
-            if(typeof show_12246297 === 'function') {
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "DOGS User";
+            document.getElementById('userName').innerText = fullName;
+            document.getElementById('userAvatar').innerText = (user.first_name || "D")[0].toUpperCase();
+        }
+
+        // LocalStorage Data
+        let balance = parseInt(localStorage.getItem('dogs_bal')) || 5;
+        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 5;
+
+        function updateDisplay() {
+            document.getElementById('balanceAmount').innerText = balance;
+            document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
+        }
+        updateDisplay();
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 2500);
+        }
+
+        // Trigger Monetag Ad & Reward User
+        function triggerAd(rewardAmount) {
+            if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
-                    // Reward user after watching ad successfully
-                    currentBalance += 50.00;
-                    document.getElementById('balance').innerText = currentBalance.toFixed(2) + " DOGS";
-                    alert("Task Completed! +50.00 DOGS added to your balance.");
+                    balance += rewardAmount;
+                    totalEarned += rewardAmount;
+                    localStorage.setItem('dogs_bal', balance);
+                    localStorage.setItem('dogs_earned', totalEarned);
+                    updateDisplay();
+                    showToast(`Successfully earned +${rewardAmount} DOGS!`);
                 }).catch((e) => {
-                    console.log(e);
-                    alert("Ad could not be loaded fully. Please try again.");
+                    showToast("Ad could not load, please try again.");
                 });
             } else {
-                alert("Ad script is loading, please wait a second and retry.");
+                showToast("Ad script is loading, please wait...");
             }
         }
     </script>
