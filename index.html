@@ -33,29 +33,47 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .task-list, .invite-list, .admin-req-list { display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 2px; }
-        .task-card, .invite-item, .req-card { background: #ffffff; border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #f3f4f6; }
+        .task-list, .invite-list, .admin-req-list, .history-list { display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 2px; }
+        .task-card, .invite-item, .req-card, .history-card { background: #ffffff; border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #f3f4f6; }
         .task-left { display: flex; align-items: center; gap: 12px; }
         .task-logo { width: 40px; height: 40px; background: #eff6ff; color: #2563eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
         .task-details h4 { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 2px; }
         .task-details p { font-size: 11px; color: #6b7280; }
         .watch-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #111827; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; }
 
-        .invite-box, .wallet-card, .admin-card { background: #ffffff; border-radius: 20px; padding: 20px; border: 1px solid #f3f4f6; margin-bottom: 15px; }
-        .ref-link-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; border-radius: 12px; font-size: 12px; color: #4b5563; word-break: break-all; margin-bottom: 12px; }
+        .invite-box, .wallet-card, .admin-card, .game-card { background: #ffffff; border-radius: 20px; padding: 20px; border: 1px solid #f3f4f6; margin-bottom: 15px; text-align: center; }
+        .ref-link-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; border-radius: 12px; font-size: 12px; color: #4b5563; word-break: break-all; margin-bottom: 12px; text-align: left; }
         .primary-btn { width: 100%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
         .input-group { margin-bottom: 14px; text-align: left; }
         .input-group label { display: block; font-size: 12px; color: #4b5563; margin-bottom: 5px; font-weight: 600; }
         .input-group input { width: 100%; background: #f9fafb; border: 1px solid #e5e7eb; padding: 11px; border-radius: 10px; font-size: 13px; outline: none; }
+
+        .spin-wheel { width: 80px; height: 80px; background: linear-gradient(135deg, #f59e0b, #ec4899); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; transition: transform 1s ease-in-out; }
+        .btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
         .nav-btn { background: none; border: none; color: #9ca3af; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
         .nav-btn.active { color: #f59e0b; font-weight: 600; }
         .nav-icon { font-size: 20px; }
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; display: none; z-index: 999; }
+
+        /* Channel Join Modal */
+        #channelModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 20px; text-align: center; max-width: 320px; width: 100%; }
     </style>
 </head>
 <body>
+
+    <!-- Mandatory Channel Join Popup -->
+    <div id="channelModal">
+        <div class="modal-content">
+            <div style="font-size: 40px; margin-bottom: 10px;">📢</div>
+            <h3>Join Our Channel</h3>
+            <p style="font-size: 12px; color: #6b7280; margin: 10px 0 20px;">You must join our Telegram channel to use this app and get updates.</p>
+            <a href="https://t.me/claimunlimiteddogsfree" target="_blank" onclick="joinedChannel()" style="display:block; background:#2563eb; color:white; padding:12px; border-radius:12px; text-decoration:none; font-weight:700; margin-bottom:10px;">Join Channel</a>
+            <button onclick="checkJoined()" style="background:none; border:none; color:#4b5563; font-size:12px; cursor:pointer; text-decoration:underline;">I Have Joined</button>
+        </div>
+    </div>
 
     <div id="toast" class="toast">Reward Credited!</div>
 
@@ -99,16 +117,16 @@
 
     <!-- TASKS -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">100 Task Hub (+35 DOGS Each)</div>
+        <div class="section-title">Task Hub (+35 DOGS Each)</div>
         <div class="task-list" id="taskTabList"></div>
     </div>
 
     <!-- INVITE -->
     <div id="tab-invite" class="tab-content">
         <div class="section-title">Referral Program</div>
-        <div class="invite-box" style="text-align: center;">
+        <div class="invite-box">
             <h3>Invite Friends</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Get 500 DOGS + 5% commission!</p>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Friend must complete 2 tasks & watch 5 ads to get 500 DOGS + 5% lifetime commission!</p>
             <div class="ref-link-box" id="refLinkText">https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_183492</div>
             <button class="primary-btn" onclick="copyRefLink()">Copy Invite Link</button>
         </div>
@@ -119,27 +137,70 @@
     <!-- GAMES -->
     <div id="tab-games" class="tab-content">
         <div class="section-title">Play & Win DOGS</div>
-        <div class="invite-box" style="text-align:center;">
-            <h3>🎰 Lucky Spin</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Cost: 10 DOGS</p>
-            <button class="primary-btn" onclick="playSpin()">Spin Now</button>
+        
+        <!-- 1. Spin Wheel -->
+        <div class="game-card">
+            <h3>🎰 Lucky Spin Wheel</h3>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Spin to win random DOGS (Mostly under 50, sometimes 50)</p>
+            <div class="spin-wheel" id="wheelIcon">🎡</div>
+            <button class="primary-btn" onclick="withAd(() => playSpin())">Spin Now</button>
+        </div>
+
+        <!-- 2. Head / Tail -->
+        <div class="game-card">
+            <h3>🪙 Head & Tail (Entry: 20 DOGS)</h3>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 50 DOGS</p>
+            <div class="btn-row">
+                <button class="primary-btn" onclick="withAd(() => playHeadTail('Head'))">Head</button>
+                <button class="primary-btn" style="background:#7c3aed;" onclick="withAd(() => playHeadTail('Tail'))">Tail</button>
+            </div>
+        </div>
+
+        <!-- 3. Dice Roll -->
+        <div class="game-card">
+            <h3>🎲 Dice Roll (Entry: 20 DOGS)</h3>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 80 DOGS (Avg 30-40)</p>
+            <button class="primary-btn" onclick="withAd(() => playDice())">Roll Dice</button>
+        </div>
+
+        <!-- 4. Up Down Prediction -->
+        <div class="game-card">
+            <h3>📈 Up / Down Candle (Entry: 100 DOGS)</h3>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win Rate 1.8x</p>
+            <div class="btn-row">
+                <button class="primary-btn" style="background:#10b981;" onclick="withAd(() => playUpDown('up'))">Up 🚀</button>
+                <button class="primary-btn" style="background:#ef4444;" onclick="withAd(() => playUpDown('down'))">Down 📉</button>
+            </div>
         </div>
     </div>
 
     <!-- WALLET -->
     <div id="tab-wallet" class="tab-content">
         <div class="section-title">Wallet & Withdrawal</div>
-        <div class="wallet-card">
-            <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">Minimum withdrawal: <strong>3,500 DOGS</strong> (5% fee applies).</p>
+        <div class="wallet-card" style="text-align: left;">
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">Minimum withdrawal: <strong>3,500 DOGS</strong>. You must watch at least <span id="adsWatchedCount" style="color:#2563eb; font-weight:bold;">0</span>/15 ads to withdraw.</p>
             <div class="input-group">
                 <label>TON Wallet Address</label>
                 <input type="text" id="walletAddressInput" placeholder="UQBx7...">
             </div>
             <div class="input-group">
-                <label>Amount</label>
+                <label>Amount (5% fee applies)</label>
                 <input type="number" id="withdrawAmountInput" placeholder="Minimum 3500">
             </div>
             <button class="primary-btn" onclick="requestWithdraw()">Request Withdrawal</button>
+        </div>
+        <div class="section-title">Withdrawal History</div>
+        <div class="history-list" id="userHistoryList"></div>
+    </div>
+
+    <!-- CHAT / SUPPORT -->
+    <div id="tab-chat" class="tab-content">
+        <div class="section-title">Live Support Chat</div>
+        <div class="wallet-card" style="text-align:center;">
+            <div style="font-size: 40px; margin-bottom: 10px;">💬</div>
+            <h3>Need Help?</h3>
+            <p style="font-size:13px; color:#6b7280; margin:10px 0 20px;">Contact our live admin support directly on Telegram.</p>
+            <a href="https://t.me/KFT24" target="_blank" class="primary-btn" style="display:block; text-decoration:none; line-height:40px;">Chat with Admin (@KFT24)</a>
         </div>
     </div>
 
@@ -149,7 +210,13 @@
         <div class="admin-card" style="border: 2px solid #dc2626;">
             <div class="input-group"><label>Balance</label><input type="number" id="adminBalanceInput"></div>
             <div class="input-group"><label>Total Earned</label><input type="number" id="adminEarnedInput"></div>
-            <button class="primary-btn" style="background:#dc2626;" onclick="adminSaveData()">Save Changes</button>
+            <button class="primary-btn" style="background:#dc2626; margin-bottom:15px;" onclick="adminSaveData()">Save Changes</button>
+            
+            <h3 style="margin-bottom:10px; font-size:14px;">User Management & Bans</h3>
+            <div id="adminUserList" style="margin-bottom:15px; text-align:left; font-size:12px; background:#f9fafb; padding:10px; border-radius:10px;"></div>
+
+            <h3 style="margin-bottom:10px; font-size:14px;">Withdrawal Requests</h3>
+            <div class="admin-req-list" id="adminReqList"></div>
         </div>
     </div>
 
@@ -160,27 +227,50 @@
         <button class="nav-btn" onclick="switchTab('invite', this)"><span class="nav-icon">👥</span><span>Invite</span></button>
         <button class="nav-btn" onclick="switchTab('games', this)"><span class="nav-icon">🎮</span><span>Games</span></button>
         <button class="nav-btn" onclick="switchTab('wallet', this)"><span class="nav-icon">👛</span><span>Wallet</span></button>
+        <button class="nav-btn" onclick="switchTab('chat', this)"><span class="nav-icon">💬</span><span>Support</span></button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         try { tg.expand(); } catch(e) {}
 
+        let userId = "183492";
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
+            userId = user.id || "183492";
             document.getElementById('userName').innerText = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "Umar";
             document.getElementById('userAvatar').innerText = (user.first_name || "U")[0].toUpperCase();
-            document.getElementById('refLinkText').innerText = `https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_${user.id || '2003'}`;
+            document.getElementById('refLinkText').innerText = `https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_${userId}`;
         }
 
-        let balance = parseInt(localStorage.getItem('dogs_bal')) || 105753;
-        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 29305;
+        let balance = parseInt(localStorage.getItem('dogs_bal')) || 125;
+        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
+        let adsWatched = parseInt(localStorage.getItem('dogs_ads_watched')) || 0;
+        let isBanned = localStorage.getItem('dogs_is_banned') === 'true';
         let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [];
-        let inviteList = [{ username: '@crypto_king99', earned: 4500, commission: 225 }];
+        let inviteList = JSON.parse(localStorage.getItem('dogs_invite_list')) || [
+            { username: '@crypto_king99', tasks: 2, ads: 5, earned: 4500, commission: 225 }
+        ];
+
+        if (isBanned) {
+            document.body.innerHTML = `<div style="text-align:center; padding:50px; font-family:sans-serif;"><h2>❌ Your account has been banned by Admin.</h2></div>`;
+        }
+
+        function checkJoined() {
+            document.getElementById('channelModal').style.display = 'none';
+        }
+        function joinedChannel() {
+            setTimeout(() => { document.getElementById('channelModal').style.display = 'none'; }, 1000);
+        }
 
         function updateDisplay() {
             document.getElementById('balanceAmount').innerText = balance;
             document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
+            document.getElementById('adsWatchedCount').innerText = adsWatched;
+            renderUserHistory();
+            renderInviteList();
+            renderAdminRequests();
+            renderAdminUsers();
         }
         updateDisplay();
 
@@ -192,7 +282,24 @@
             setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
-        // Render 100 Tasks
+        // Mandatory Monetag Ad Wrapper for Games
+        function withAd(callback) {
+            adsWatched++;
+            localStorage.setItem('dogs_ads_watched', adsWatched);
+            updateDisplay();
+
+            if (typeof show_12246297 === 'function') {
+                show_12246297().then(() => {
+                    callback();
+                }).catch(() => {
+                    callback();
+                });
+            } else {
+                callback();
+            }
+        }
+
+        // Render Tasks (100 Tasks)
         function renderTasksHub() {
             const homeList = document.getElementById('homeTasksList');
             const taskTab = document.getElementById('taskTabList');
@@ -206,7 +313,7 @@
                             <div class="task-logo">⚡</div>
                             <div class="task-details"><h4>Task #${i}</h4><p>+35 DOGS</p></div>
                         </div>
-                        <button class="watch-btn" onclick="watchTask(35)">Watch</button>
+                        <button class="watch-btn" onclick="watchTask(35)">Watch Ad</button>
                     </div>`;
                 if (i <= 6 && homeList) homeList.innerHTML += html;
                 if (taskTab) taskTab.innerHTML += html;
@@ -215,6 +322,9 @@
         renderTasksHub();
 
         function watchTask(reward) {
+            adsWatched++;
+            localStorage.setItem('dogs_ads_watched', adsWatched);
+            
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
                     creditReward(reward);
@@ -233,14 +343,57 @@
             showToast(`+${reward} DOGS Added!`);
         }
 
+        // 1. Spin Wheel: under 50, sometimes 50
         function playSpin() {
-            if (balance < 10) { showToast("Need min 10 DOGS!", true); return; }
-            balance -= 10;
-            const win = Math.floor(Math.random() * 50) + 10;
+            let win = Math.random() < 0.15 ? 50 : Math.floor(Math.random() * 45) + 1;
             balance += win; totalEarned += win;
             localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
             updateDisplay();
-            showToast(`Won +${win} DOGS!`);
+            showToast(`Spin Won! +${win} DOGS`);
+        }
+
+        // 2. Head / Tail: entry 20, win up to 50
+        function playHeadTail(choice) {
+            if (balance < 20) { showToast("Entry fee 20 DOGS required!", true); return; }
+            balance -= 20;
+            let result = Math.random() > 0.5 ? 'Head' : 'Tail';
+            if (choice === result) {
+                let win = Math.floor(Math.random() * 31) + 20; // 20 to 50
+                balance += win; totalEarned += win;
+                showToast(`Result: ${result}. You won +${win} DOGS!`);
+            } else {
+                showToast(`Result: ${result}. You lost 20 DOGS!`, true);
+            }
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
+        }
+
+        // 3. Dice Roll: entry 20, win up to 80 (avg 30-40)
+        function playDice() {
+            if (balance < 20) { showToast("Entry fee 20 DOGS required!", true); return; }
+            balance -= 20;
+            let diceVal = Math.floor(Math.random() * 6) + 1;
+            let win = Math.round(diceVal * 12 + Math.random() * 10); // avg 30-40, up to ~80
+            balance += win; totalEarned += win;
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
+            showToast(`Dice Rolled ${diceVal}! Won +${win} DOGS`);
+        }
+
+        // 4. Up Down Candle: entry 100, win rate 1.8x, win 60/40%
+        function playUpDown(dir) {
+            if (balance < 100) { showToast("Entry fee 100 DOGS required!", true); return; }
+            balance -= 100;
+            let winChance = Math.random() < 0.60; // 60% win rate
+            if (winChance) {
+                let win = Math.round(100 * 1.8); // 180 DOGS
+                balance += win; totalEarned += win;
+                showToast(`Prediction Correct! Won +${win} DOGS (1.8x)`);
+            } else {
+                showToast(`Prediction Wrong! Lost 100 DOGS.`, true);
+            }
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
         }
 
         function copyRefLink() {
@@ -248,14 +401,59 @@
             showToast("Invite link copied!");
         }
 
+        function renderInviteList() {
+            const list = document.getElementById('inviteFriendsList');
+            list.innerHTML = '';
+            inviteList.forEach(f => {
+                let qualified = f.tasks >= 2 && f.ads >= 5;
+                list.innerHTML += `
+                    <div class="invite-item">
+                        <div>
+                            <h4>${f.username}</h4>
+                            <p>Tasks: ${f.tasks}/2 | Ads: ${f.ads}/5 ${qualified ? '✅ (500 Given)' : '⏳ (Pending)'}</p>
+                        </div>
+                        <span style="font-size:12px; font-weight:700; color:#059669;">+${f.commission} Comm.</span>
+                    </div>`;
+            });
+        }
+
+        // Withdrawal with 15 ads check & 5% fee
         function requestWithdraw() {
+            if (adsWatched < 15) { showToast(`You must watch at least 15 ads! (${adsWatched}/15)`, true); return; }
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
-            if (!address || amount < 3500 || amount > balance) { showToast("Invalid amount or address!", true); return; }
+            if (!address || amount < 3500 || amount > balance) { showToast("Invalid amount or address (Min 3500)!", true); return; }
+            
+            const fee = Math.round(amount * 0.05);
+            const netAmount = amount - fee;
+
             balance -= amount;
             localStorage.setItem('dogs_bal', balance);
+
+            const req = { id: Date.now(), amount: netAmount, fee, address, status: 'Pending' };
+            withdrawHistory.unshift(req);
+            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+
             updateDisplay();
-            showToast("Withdrawal requested successfully!");
+            showToast(`Withdrawal requested! Fee: ${fee} DOGS`);
+            document.getElementById('withdrawAmountInput').value = "";
+        }
+
+        function renderUserHistory() {
+            const list = document.getElementById('userHistoryList');
+            if (withdrawHistory.length === 0) { list.innerHTML = `<p style="font-size:12px; color:#9ca3af; text-align:center;">No withdrawal history.</p>`; return; }
+            list.innerHTML = '';
+            withdrawHistory.forEach(h => {
+                let color = h.status === 'Approved' ? '#059669' : (h.status === 'Rejected' ? '#dc2626' : '#d97706');
+                list.innerHTML += `
+                    <div class="history-card">
+                        <div>
+                            <h4>${h.amount} DOGS (Fee: ${h.fee})</h4>
+                            <p style="word-break:break-all;">${h.address}</p>
+                        </div>
+                        <span style="font-size:12px; font-weight:700; color:${color};">${h.status}</span>
+                    </div>`;
+            });
         }
 
         function openAdminPrompt() {
@@ -273,6 +471,54 @@
             localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
             updateDisplay();
             showToast("Saved!");
+        }
+
+        function renderAdminRequests() {
+            const list = document.getElementById('adminReqList');
+            const pending = withdrawHistory.filter(i => i.status === 'Pending');
+            if (pending.length === 0) { list.innerHTML = `<p style="font-size:12px; color:#9ca3af; text-align:center;">No pending requests.</p>`; return; }
+            list.innerHTML = '';
+            pending.forEach(req => {
+                list.innerHTML += `
+                    <div class="req-card">
+                        <div>
+                            <h4>${req.amount} DOGS (Fee: ${req.fee})</h4>
+                            <p style="word-break:break-all;">${req.address}</p>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="watch-btn" style="background:#10b981; color:white; padding:6px;" onclick="updateStatus(${req.id}, 'Approved')">Approve</button>
+                            <button class="watch-btn" style="background:#ef4444; color:white; padding:6px;" onclick="updateStatus(${req.id}, 'Rejected')">Reject</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function updateStatus(id, status) {
+            const req = withdrawHistory.find(i => i.id === id);
+            if (!req) return;
+            req.status = status;
+            if (status === 'Rejected') {
+                balance += (req.amount + req.fee);
+                localStorage.setItem('dogs_bal', balance);
+                showToast("Rejected & refunded.");
+            } else {
+                showToast("Approved!");
+            }
+            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+            updateDisplay();
+        }
+
+        function renderAdminUsers() {
+            const box = document.getElementById('adminUserList');
+            box.innerHTML = `User ID: ${userId} | Status: ${isBanned ? 'Banned' : 'Active'} <br>
+            <button onclick="toggleBan()" style="margin-top:5px; background:${isBanned?'#10b981':'#dc2626'}; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">${isBanned?'Unban User':'Ban User'}</button>`;
+        }
+
+        function toggleBan() {
+            isBanned = !isBanned;
+            localStorage.setItem('dogs_is_banned', isBanned);
+            renderAdminUsers();
+            showToast(isBanned ? "User Banned" : "User Unbanned");
         }
 
         function switchTab(tabName, el) {
