@@ -40,6 +40,9 @@
         .task-details h4 { font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 2px; }
         .task-details p { font-size: 11px; color: #6b7280; }
         .watch-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #111827; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .watch-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+
+        .cooldown-banner { background: #fef3c7; border: 1px solid #f59e0b; color: #b45309; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 15px; display: none; }
 
         .invite-box, .wallet-card, .admin-card, .game-card { background: #ffffff; border-radius: 20px; padding: 20px; border: 1px solid #f3f4f6; margin-bottom: 15px; text-align: center; }
         .ref-link-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; border-radius: 12px; font-size: 12px; color: #4b5563; word-break: break-all; margin-bottom: 12px; text-align: left; }
@@ -109,13 +112,21 @@
                 <button class="btn-withdraw" onclick="switchTab('wallet')">Withdraw</button>
             </div>
         </div>
-        <div class="section-title">Featured Tasks (35 DOGS Each)</div>
+        
+        <div id="cooldownBanner" class="cooldown-banner">
+            ⏳ All 40 tasks completed! Next task cycle unlocks in: <span id="cooldownTimer">04:00:00</span>
+        </div>
+
+        <div class="section-title">Featured Tasks (20 DOGS Each)</div>
         <div class="task-list" id="homeTasksList"></div>
     </div>
 
     <!-- TASKS -->
     <div id="tab-tasks" class="tab-content">
-        <div class="section-title">Task Hub (+35 DOGS Each)</div>
+        <div class="section-title">Task Hub (40 Tasks • 20 DOGS Each)</div>
+        <div id="taskCooldownBanner" class="cooldown-banner">
+            ⏳ Cooldown Active! Next tasks unlock in: <span id="taskCooldownTimer">04:00:00</span>
+        </div>
         <div class="task-list" id="taskTabList"></div>
     </div>
 
@@ -124,7 +135,7 @@
         <div class="section-title">Referral Program</div>
         <div class="invite-box">
             <h3>Invite Friends</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Friend must complete 2 tasks & watch 5 ads to get 500 DOGS + 5% lifetime commission!</p>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Friend must complete tasks & watch ads to get 500 DOGS + 5% lifetime commission!</p>
             <div class="ref-link-box" id="refLinkText">https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_183492</div>
             <button class="primary-btn" onclick="copyRefLink()">Copy Invite Link</button>
         </div>
@@ -138,7 +149,7 @@
         
         <div class="game-card">
             <h3>🎰 Lucky Spin Wheel</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Spin to win random DOGS (Mostly under 50, sometimes 50)</p>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Spin to win random DOGS</p>
             <div class="spin-wheel" id="wheelIcon">🎡</div>
             <button class="primary-btn" onclick="withAd(() => playSpin())">Spin Now</button>
         </div>
@@ -154,7 +165,7 @@
 
         <div class="game-card">
             <h3>🎲 Dice Roll (Entry: 20 DOGS)</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 80 DOGS (Avg 30-40)</p>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 80 DOGS</p>
             <button class="primary-btn" onclick="withAd(() => playDice())">Roll Dice</button>
         </div>
 
@@ -246,53 +257,35 @@
         const KEY_EARNED = `dogs_earned_${userId}`;
         const KEY_ADS = `dogs_ads_watched_${userId}`;
         const KEY_TASKS = `dogs_tasks_completed_${userId}`;
+        const KEY_TASK_LIST = `dogs_task_status_${userId}`;
+        const KEY_COOLDOWN = `dogs_cooldown_end_${userId}`;
         const KEY_BANNED = `dogs_is_banned_${userId}`;
         const KEY_HISTORY = `dogs_withdraw_history_${userId}`;
         const KEY_INVITES = `dogs_invite_list_${userId}`;
 
-        let balance = parseInt(localStorage.getItem(KEY_BAL));
-        if (isNaN(balance)) balance = 0;
-
-        let totalEarned = parseInt(localStorage.getItem(KEY_EARNED));
-        if (isNaN(totalEarned)) totalEarned = 0;
-
-        let adsWatched = parseInt(localStorage.getItem(KEY_ADS));
-        if (isNaN(adsWatched)) adsWatched = 0;
-
-        let tasksCompleted = parseInt(localStorage.getItem(KEY_TASKS));
-        if (isNaN(tasksCompleted)) tasksCompleted = 0;
+        let balance = parseInt(localStorage.getItem(KEY_BAL)) || 0;
+        let totalEarned = parseInt(localStorage.getItem(KEY_EARNED)) || 0;
+        let adsWatched = parseInt(localStorage.getItem(KEY_ADS)) || 0;
+        let tasksCompleted = parseInt(localStorage.getItem(KEY_TASKS)) || 0;
+        
+        // 40 Tasks state array (false = uncompleted, true = completed)
+        let taskStatus = JSON.parse(localStorage.getItem(KEY_TASK_LIST)) || Array(40).fill(false);
+        let cooldownEnd = parseInt(localStorage.getItem(KEY_COOLDOWN)) || 0;
 
         let isBanned = localStorage.getItem(KEY_BANNED) === 'true';
         let withdrawHistory = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
-        
-        // Real clean invite list (No fake crypto_king99)
         let inviteList = JSON.parse(localStorage.getItem(KEY_INVITES)) || [];
 
-        // Check URL startapp parameter for referral tracking (e.g. ?start=ref_12345)
-        const urlParams = new URLSearchParams(window.location.search);
-        // Telegram WebApp initData or startParam check
-        let startParam = "";
-        if (tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
-            startParam = tg.initDataUnsafe.start_param;
-        } else {
-            const hash = window.location.hash;
-            if (hash.includes("ref_")) {
-                startParam = hash.substring(hash.indexOf("ref_"));
+        // Check Cooldown and Reset if 4 hours passed
+        function checkCooldownReset() {
+            let now = Date.now();
+            if (cooldownEnd > 0 && now >= cooldownEnd) {
+                taskStatus = Array(40).fill(false);
+                cooldownEnd = 0;
+                saveData();
             }
         }
-
-        if (startParam && startParam.startsWith("ref_")) {
-            let inviterId = startParam.replace("ref_", "");
-            if (inviterId !== userId) {
-                let inviterKey = `dogs_invite_list_${inviterId}`;
-                let inviterList = JSON.parse(localStorage.getItem(inviterKey)) || [];
-                // Add current user if not already in inviter's list
-                if (!inviterList.some(item => item.username === userHandle)) {
-                    inviterList.push({ username: userHandle, tasks: 0, ads: 0, earned: 0, commission: 0, rewarded: false });
-                    localStorage.setItem(inviterKey, JSON.stringify(inviterList));
-                }
-            }
-        }
+        checkCooldownReset();
 
         if (isBanned) {
             document.body.innerHTML = `<div style="text-align:center; padding:50px; font-family:sans-serif;"><h2>❌ Your account has been banned by Admin.</h2></div>`;
@@ -306,6 +299,8 @@
             localStorage.setItem(KEY_EARNED, totalEarned);
             localStorage.setItem(KEY_ADS, adsWatched);
             localStorage.setItem(KEY_TASKS, tasksCompleted);
+            localStorage.setItem(KEY_TASK_LIST, JSON.stringify(taskStatus));
+            localStorage.setItem(KEY_COOLDOWN, cooldownEnd);
             localStorage.setItem(KEY_BANNED, isBanned);
             localStorage.setItem(KEY_HISTORY, JSON.stringify(withdrawHistory));
             localStorage.setItem(KEY_INVITES, JSON.stringify(inviteList));
@@ -315,12 +310,38 @@
             document.getElementById('balanceAmount').innerText = balance;
             document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
             document.getElementById('adsWatchedCount').innerText = adsWatched;
+            renderTasksHub();
             renderUserHistory();
             renderInviteList();
             renderAdminRequests();
             renderAdminUsers();
         }
         updateDisplay();
+
+        // Timer Interval for 4-Hour Cooldown
+        setInterval(() => {
+            let now = Date.now();
+            if (cooldownEnd > now) {
+                let diff = Math.floor((cooldownEnd - now) / 1000);
+                let h = String(Math.floor(diff / 3600)).padStart(2, '0');
+                let m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+                let s = String(diff % 60).padStart(2, '0');
+                let timeStr = `${h}:${m}:${s}`;
+                
+                document.getElementById('cooldownBanner').style.display = 'block';
+                document.getElementById('cooldownTimer').innerText = timeStr;
+                document.getElementById('taskCooldownBanner').style.display = 'block';
+                document.getElementById('taskCooldownTimer').innerText = timeStr;
+            } else if (cooldownEnd > 0 && now >= cooldownEnd) {
+                checkCooldownReset();
+                updateDisplay();
+                document.getElementById('cooldownBanner').style.display = 'none';
+                document.getElementById('taskCooldownBanner').style.display = 'none';
+            } else {
+                document.getElementById('cooldownBanner').style.display = 'none';
+                document.getElementById('taskCooldownBanner').style.display = 'none';
+            }
+        }, 1000);
 
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
@@ -348,38 +369,49 @@
             if (homeList) homeList.innerHTML = '';
             if (taskTab) taskTab.innerHTML = '';
 
-            for (let i = 1; i <= 100; i++) {
+            for (let i = 0; i < 40; i++) {
+                let isDone = taskStatus[i];
                 const html = `
                     <div class="task-card">
                         <div class="task-left">
-                            <div class="task-logo">⚡</div>
-                            <div class="task-details"><h4>Task #${i}</h4><p>+35 DOGS</p></div>
+                            <div class="task-logo">${isDone ? '✅' : '⚡'}</div>
+                            <div class="task-details"><h4>Task #${i + 1}</h4><p>+20 DOGS</p></div>
                         </div>
-                        <button class="watch-btn" onclick="watchTask(35)">Watch Ad</button>
+                        <button class="watch-btn" ${isDone ? 'disabled' : ''} onclick="completeTask(${i})">${isDone ? 'Finished' : 'Watch Ad'}</button>
                     </div>`;
-                if (i <= 6 && homeList) homeList.innerHTML += html;
+                if (i < 6 && homeList) homeList.innerHTML += html;
                 if (taskTab) taskTab.innerHTML += html;
             }
         }
-        renderTasksHub();
 
-        function watchTask(reward) {
-            tasksCompleted++;
+        function completeTask(index) {
+            if (taskStatus[index]) return;
+
             adsWatched++;
             
             if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => { creditReward(reward); }).catch(() => { creditReward(reward); });
+                show_12246297().then(() => { processTaskReward(index); }).catch(() => { processTaskReward(index); });
             } else {
-                creditReward(reward);
+                processTaskReward(index);
             }
         }
 
-        function creditReward(reward) {
-            balance += reward;
-            totalEarned += reward;
+        function processTaskReward(index) {
+            taskStatus[index] = true;
+            tasksCompleted++;
+            balance += 20;
+            totalEarned += 20;
+
+            // Check if all 40 tasks are completed -> Set 4 hours cooldown
+            if (taskStatus.every(status => status === true)) {
+                cooldownEnd = Date.now() + (4 * 60 * 60 * 1000); // 4 Hours
+                showToast("All 40 tasks completed! 4h Cooldown started.");
+            } else {
+                showToast("+20 DOGS Added!");
+            }
+
             saveData();
             updateDisplay();
-            showToast(`+${reward} DOGS Added!`);
         }
 
         function playSpin() {
@@ -536,7 +568,7 @@
         }
 
         function updateStatus(id, status) {
-            const req = withdrawHistory.find(i => i.id === id);
+            const req = withdrawHistory.find(i => id === i.id);
             if (!req) return;
             req.status = status;
             if (status === 'Rejected') {
