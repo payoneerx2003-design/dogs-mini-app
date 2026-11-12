@@ -57,14 +57,12 @@
         .nav-icon { font-size: 20px; }
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; display: none; z-index: 999; }
 
-        /* Channel Join Modal */
         #channelModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: #fff; padding: 25px; border-radius: 20px; text-align: center; max-width: 320px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <!-- Mandatory Channel Join Popup -->
     <div id="channelModal">
         <div class="modal-content">
             <div style="font-size: 40px; margin-bottom: 10px;">📢</div>
@@ -92,7 +90,7 @@
         <div class="user-avatar" id="userAvatar">U</div>
         <div class="user-info">
             <span>Welcome back</span>
-            <h3 id="userName">Umar Ahmed Sakib</h3>
+            <h3 id="userName">User</h3>
         </div>
     </div>
 
@@ -104,8 +102,8 @@
     <div id="tab-home" class="tab-content active">
         <div class="hero-card">
             <div class="hero-top"><span>🐕</span> Your balance</div>
-            <div class="balance-num"><span id="balanceAmount">125</span> DOGS</div>
-            <div class="balance-sub" id="totalEarned">125 DOGS earned in total</div>
+            <div class="balance-num"><span id="balanceAmount">0</span> DOGS</div>
+            <div class="balance-sub" id="totalEarned">0 DOGS earned in total</div>
             <div class="hero-buttons">
                 <button class="btn-earn" onclick="switchTab('tasks')">Earn more</button>
                 <button class="btn-withdraw" onclick="switchTab('wallet')">Withdraw</button>
@@ -138,7 +136,6 @@
     <div id="tab-games" class="tab-content">
         <div class="section-title">Play & Win DOGS</div>
         
-        <!-- 1. Spin Wheel -->
         <div class="game-card">
             <h3>🎰 Lucky Spin Wheel</h3>
             <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Spin to win random DOGS (Mostly under 50, sometimes 50)</p>
@@ -146,7 +143,6 @@
             <button class="primary-btn" onclick="withAd(() => playSpin())">Spin Now</button>
         </div>
 
-        <!-- 2. Head / Tail -->
         <div class="game-card">
             <h3>🪙 Head & Tail (Entry: 20 DOGS)</h3>
             <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 50 DOGS</p>
@@ -156,14 +152,12 @@
             </div>
         </div>
 
-        <!-- 3. Dice Roll -->
         <div class="game-card">
             <h3>🎲 Dice Roll (Entry: 20 DOGS)</h3>
             <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win up to 80 DOGS (Avg 30-40)</p>
             <button class="primary-btn" onclick="withAd(() => playDice())">Roll Dice</button>
         </div>
 
-        <!-- 4. Up Down Prediction -->
         <div class="game-card">
             <h3>📈 Up / Down Candle (Entry: 100 DOGS)</h3>
             <p style="font-size:12px; color:#6b7280; margin-bottom:10px;">Win Rate 1.8x</p>
@@ -193,7 +187,7 @@
         <div class="history-list" id="userHistoryList"></div>
     </div>
 
-    <!-- CHAT / SUPPORT -->
+    <!-- CHAT -->
     <div id="tab-chat" class="tab-content">
         <div class="section-title">Live Support Chat</div>
         <div class="wallet-card" style="text-align:center;">
@@ -234,21 +228,39 @@
         const tg = window.Telegram.WebApp;
         try { tg.expand(); } catch(e) {}
 
-        let userId = "183492";
+        // Fetch User ID dynamically from Telegram WebApp
+        let userId = "guest_user";
+        let userName = "User";
+
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
-            userId = user.id || "183492";
-            document.getElementById('userName').innerText = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "Umar";
-            document.getElementById('userAvatar').innerText = (user.first_name || "U")[0].toUpperCase();
+            userId = String(user.id);
+            userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || "User";
+            document.getElementById('userName').innerText = userName;
+            document.getElementById('userAvatar').innerText = userName[0].toUpperCase();
             document.getElementById('refLinkText').innerText = `https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_${userId}`;
         }
 
-        let balance = parseInt(localStorage.getItem('dogs_bal')) || 125;
-        let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
-        let adsWatched = parseInt(localStorage.getItem('dogs_ads_watched')) || 0;
-        let isBanned = localStorage.getItem('dogs_is_banned') === 'true';
-        let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [];
-        let inviteList = JSON.parse(localStorage.getItem('dogs_invite_list')) || [
+        // Unique Key per user ID so different accounts don't share balance
+        const KEY_BAL = `dogs_bal_${userId}`;
+        const KEY_EARNED = `dogs_earned_${userId}`;
+        const KEY_ADS = `dogs_ads_watched_${userId}`;
+        const KEY_BANNED = `dogs_is_banned_${userId}`;
+        const KEY_HISTORY = `dogs_withdraw_history_${userId}`;
+
+        let balance = parseInt(localStorage.getItem(KEY_BAL));
+        if (isNaN(balance)) balance = 0; // New users start with 0 balance
+
+        let totalEarned = parseInt(localStorage.getItem(KEY_EARNED));
+        if (isNaN(totalEarned)) totalEarned = 0;
+
+        let adsWatched = parseInt(localStorage.getItem(KEY_ADS));
+        if (isNaN(adsWatched)) adsWatched = 0;
+
+        let isBanned = localStorage.getItem(KEY_BANNED) === 'true';
+        let withdrawHistory = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
+        
+        let inviteList = JSON.parse(localStorage.getItem(`dogs_invite_list_${userId}`)) || [
             { username: '@crypto_king99', tasks: 2, ads: 5, earned: 4500, commission: 225 }
         ];
 
@@ -256,11 +268,15 @@
             document.body.innerHTML = `<div style="text-align:center; padding:50px; font-family:sans-serif;"><h2>❌ Your account has been banned by Admin.</h2></div>`;
         }
 
-        function checkJoined() {
-            document.getElementById('channelModal').style.display = 'none';
-        }
-        function joinedChannel() {
-            setTimeout(() => { document.getElementById('channelModal').style.display = 'none'; }, 1000);
+        function checkJoined() { document.getElementById('channelModal').style.display = 'none'; }
+        function joinedChannel() { setTimeout(() => { document.getElementById('channelModal').style.display = 'none'; }, 1000); }
+
+        function saveData() {
+            localStorage.setItem(KEY_BAL, balance);
+            localStorage.setItem(KEY_EARNED, totalEarned);
+            localStorage.setItem(KEY_ADS, adsWatched);
+            localStorage.setItem(KEY_BANNED, isBanned);
+            localStorage.setItem(KEY_HISTORY, JSON.stringify(withdrawHistory));
         }
 
         function updateDisplay() {
@@ -282,24 +298,18 @@
             setTimeout(() => { t.style.display = 'none'; }, 2000);
         }
 
-        // Mandatory Monetag Ad Wrapper for Games
         function withAd(callback) {
             adsWatched++;
-            localStorage.setItem('dogs_ads_watched', adsWatched);
+            saveData();
             updateDisplay();
 
             if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    callback();
-                }).catch(() => {
-                    callback();
-                });
+                show_12246297().then(() => { callback(); }).catch(() => { callback(); });
             } else {
                 callback();
             }
         }
 
-        // Render Tasks (100 Tasks)
         function renderTasksHub() {
             const homeList = document.getElementById('homeTasksList');
             const taskTab = document.getElementById('taskTabList');
@@ -323,12 +333,8 @@
 
         function watchTask(reward) {
             adsWatched++;
-            localStorage.setItem('dogs_ads_watched', adsWatched);
-            
             if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    creditReward(reward);
-                }).catch(() => { creditReward(reward); });
+                show_12246297().then(() => { creditReward(reward); }).catch(() => { creditReward(reward); });
             } else {
                 creditReward(reward);
             }
@@ -337,62 +343,56 @@
         function creditReward(reward) {
             balance += reward;
             totalEarned += reward;
-            localStorage.setItem('dogs_bal', balance);
-            localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
             showToast(`+${reward} DOGS Added!`);
         }
 
-        // 1. Spin Wheel: under 50, sometimes 50
         function playSpin() {
             let win = Math.random() < 0.15 ? 50 : Math.floor(Math.random() * 45) + 1;
             balance += win; totalEarned += win;
-            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
             showToast(`Spin Won! +${win} DOGS`);
         }
 
-        // 2. Head / Tail: entry 20, win up to 50
         function playHeadTail(choice) {
             if (balance < 20) { showToast("Entry fee 20 DOGS required!", true); return; }
             balance -= 20;
             let result = Math.random() > 0.5 ? 'Head' : 'Tail';
             if (choice === result) {
-                let win = Math.floor(Math.random() * 31) + 20; // 20 to 50
+                let win = Math.floor(Math.random() * 31) + 20;
                 balance += win; totalEarned += win;
-                showToast(`Result: ${result}. You won +${win} DOGS!`);
+                showToast(`Result: ${result}. Won +${win} DOGS!`);
             } else {
-                showToast(`Result: ${result}. You lost 20 DOGS!`, true);
+                showToast(`Result: ${result}. Lost 20 DOGS!`, true);
             }
-            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
         }
 
-        // 3. Dice Roll: entry 20, win up to 80 (avg 30-40)
         function playDice() {
             if (balance < 20) { showToast("Entry fee 20 DOGS required!", true); return; }
             balance -= 20;
             let diceVal = Math.floor(Math.random() * 6) + 1;
-            let win = Math.round(diceVal * 12 + Math.random() * 10); // avg 30-40, up to ~80
+            let win = Math.round(diceVal * 12 + Math.random() * 10);
             balance += win; totalEarned += win;
-            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
             showToast(`Dice Rolled ${diceVal}! Won +${win} DOGS`);
         }
 
-        // 4. Up Down Candle: entry 100, win rate 1.8x, win 60/40%
         function playUpDown(dir) {
             if (balance < 100) { showToast("Entry fee 100 DOGS required!", true); return; }
             balance -= 100;
-            let winChance = Math.random() < 0.60; // 60% win rate
-            if (winChance) {
-                let win = Math.round(100 * 1.8); // 180 DOGS
+            if (Math.random() < 0.60) {
+                let win = Math.round(100 * 1.8);
                 balance += win; totalEarned += win;
-                showToast(`Prediction Correct! Won +${win} DOGS (1.8x)`);
+                showToast(`Prediction Correct! Won +${win} DOGS`);
             } else {
                 showToast(`Prediction Wrong! Lost 100 DOGS.`, true);
             }
-            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
         }
 
@@ -410,14 +410,13 @@
                     <div class="invite-item">
                         <div>
                             <h4>${f.username}</h4>
-                            <p>Tasks: ${f.tasks}/2 | Ads: ${f.ads}/5 ${qualified ? '✅ (500 Given)' : '⏳ (Pending)'}</p>
+                            <p>Tasks: ${f.tasks}/2 | Ads: ${f.ads}/5 ${qualified ? '✅ (500 Given)' : '⏳'}</p>
                         </div>
                         <span style="font-size:12px; font-weight:700; color:#059669;">+${f.commission} Comm.</span>
                     </div>`;
             });
         }
 
-        // Withdrawal with 15 ads check & 5% fee
         function requestWithdraw() {
             if (adsWatched < 15) { showToast(`You must watch at least 15 ads! (${adsWatched}/15)`, true); return; }
             const address = document.getElementById('walletAddressInput').value.trim();
@@ -428,11 +427,9 @@
             const netAmount = amount - fee;
 
             balance -= amount;
-            localStorage.setItem('dogs_bal', balance);
-
             const req = { id: Date.now(), amount: netAmount, fee, address, status: 'Pending' };
             withdrawHistory.unshift(req);
-            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+            saveData();
 
             updateDisplay();
             showToast(`Withdrawal requested! Fee: ${fee} DOGS`);
@@ -468,7 +465,7 @@
         function adminSaveData() {
             balance = parseInt(document.getElementById('adminBalanceInput').value) || 0;
             totalEarned = parseInt(document.getElementById('adminEarnedInput').value) || 0;
-            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            saveData();
             updateDisplay();
             showToast("Saved!");
         }
@@ -499,24 +496,23 @@
             req.status = status;
             if (status === 'Rejected') {
                 balance += (req.amount + req.fee);
-                localStorage.setItem('dogs_bal', balance);
                 showToast("Rejected & refunded.");
             } else {
                 showToast("Approved!");
             }
-            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+            saveData();
             updateDisplay();
         }
 
         function renderAdminUsers() {
             const box = document.getElementById('adminUserList');
-            box.innerHTML = `User ID: ${userId} | Status: ${isBanned ? 'Banned' : 'Active'} <br>
+            box.innerHTML = `Current User ID: ${userId} | Status: ${isBanned ? 'Banned' : 'Active'} <br>
             <button onclick="toggleBan()" style="margin-top:5px; background:${isBanned?'#10b981':'#dc2626'}; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer;">${isBanned?'Unban User':'Ban User'}</button>`;
         }
 
         function toggleBan() {
             isBanned = !isBanned;
-            localStorage.setItem('dogs_is_banned', isBanned);
+            saveData();
             renderAdminUsers();
             showToast(isBanned ? "User Banned" : "User Unbanned");
         }
