@@ -62,6 +62,10 @@
             cursor: pointer;
             color: #4b5563;
         }
+        .admin-btn {
+            background: #dc2626 !important;
+            color: white !important;
+        }
         .user-welcome {
             display: flex;
             align-items: center;
@@ -327,7 +331,7 @@
             cursor: pointer;
         }
 
-        /* Wallet / Withdraw Section */
+        /* Wallet Section */
         .wallet-card {
             background: #ffffff;
             border-radius: 20px;
@@ -356,6 +360,16 @@
             outline: none;
             color: #111827;
         }
+
+        /* ADMIN PANEL STYLES */
+        .admin-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #dc2626;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.1);
+        }
+        .admin-card h3 { color: #dc2626; margin-bottom: 10px; }
 
         /* Bottom Navigation Bar */
         .bottom-nav {
@@ -417,7 +431,7 @@
             <span>Free DOGS</span>
         </div>
         <div class="top-right-btns">
-            <button class="pill-btn">🌐 EN</button>
+            <button class="pill-btn admin-btn" onclick="openAdminPanel()">⚙️ Admin</button>
             <button class="pill-btn" onclick="showToast('Support: @admin')">🎧 Support</button>
         </div>
     </div>
@@ -471,13 +485,13 @@
         </div>
     </div>
 
-    <!-- TASKS TAB (20 Task Boxes) -->
+    <!-- TASKS TAB -->
     <div id="tab-tasks" class="tab-content">
         <div class="section-title">Complete 20 Tasks to Unlock +500 Invite Bonus</div>
         <div class="task-list" id="twentyTasksList"></div>
     </div>
 
-    <!-- INVITE TAB (20 Tasks Condition + 500 DOGS Reward) -->
+    <!-- INVITE TAB -->
     <div id="tab-invite" class="tab-content">
         <div class="section-title">Referral Program</div>
         <div class="invite-box">
@@ -551,6 +565,26 @@
         </div>
     </div>
 
+    <!-- ADMIN TAB -->
+    <div id="tab-admin" class="tab-content">
+        <div class="section-title">🛠️ Master Admin Control Panel</div>
+        <div class="admin-card">
+            <p style="font-size: 12px; color: #4b5563; margin-bottom: 15px;">
+                Modify user statistics, balances, and reset task progresses instantly from here.
+            </p>
+            <div class="input-group">
+                <label>Edit Balance (DOGS)</label>
+                <input type="number" id="adminBalanceInput">
+            </div>
+            <div class="input-group">
+                <label>Edit Total Earned (DOGS)</label>
+                <input type="number" id="adminEarnedInput">
+            </div>
+            <button class="primary-btn" style="background:#dc2626; margin-bottom:10px;" onclick="adminSaveData()">Save Changes</button>
+            <button class="primary-btn" style="background:#4b5563;" onclick="adminResetTasks()">Reset All Completed Tasks</button>
+        </div>
+    </div>
+
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
         <button class="nav-btn active" onclick="switchTab('home', this)">
@@ -596,7 +630,6 @@
             document.getElementById('balanceAmount').innerText = balance;
             document.getElementById('totalEarned').innerText = totalEarned + " DOGS earned in total";
             
-            // Update Invite Progress
             const count = completedTasks.length;
             const percent = Math.min((count / 20) * 100, 100);
             document.getElementById('inviteProgressText').innerText = `${count} / 20 Tasks`;
@@ -623,25 +656,28 @@
             setTimeout(() => { t.style.display = 'none'; }, 2800);
         }
 
-        // Generate 20 Tasks Dynamically
         const taskListContainer = document.getElementById('twentyTasksList');
-        for (let i = 1; i <= 20; i++) {
-            const taskId = `task_${i}`;
-            const isDone = completedTasks.includes(taskId);
-            const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
-            taskCard.innerHTML = `
-                <div class="task-left">
-                    <div class="task-logo">#${i}</div>
-                    <div class="task-details">
-                        <h4>Sponsor Task #${i}</h4>
-                        <p>+50 DOGS &bull; Watch Video</p>
+        function renderTasks() {
+            taskListContainer.innerHTML = '';
+            for (let i = 1; i <= 20; i++) {
+                const taskId = `task_${i}`;
+                const isDone = completedTasks.includes(taskId);
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                taskCard.innerHTML = `
+                    <div class="task-left">
+                        <div class="task-logo">#${i}</div>
+                        <div class="task-details">
+                            <h4>Sponsor Task #${i}</h4>
+                            <p>+50 DOGS &bull; Watch Video</p>
+                        </div>
                     </div>
-                </div>
-                <button class="watch-btn ${isDone ? 'done' : ''}" id="btn_${taskId}" onclick="completeTask('${taskId}', 50)">${isDone ? 'Done' : 'Watch'}</button>
-            `;
-            taskListContainer.appendChild(taskCard);
+                    <button class="watch-btn ${isDone ? 'done' : ''}" id="btn_${taskId}" onclick="completeTask('${taskId}', 50)">${isDone ? 'Done' : 'Watch'}</button>
+                `;
+                taskListContainer.appendChild(taskCard);
+            }
         }
+        renderTasks();
 
         function completeTask(taskId, reward) {
             if (completedTasks.includes(taskId)) return;
@@ -659,7 +695,6 @@
                     btn.innerText = 'Done';
                     btn.classList.add('done');
 
-                    // Auto credit +500 DOGS when 20th task finishes
                     if (completedTasks.length === 20 && !inviteBonusClaimed) {
                         balance += 500;
                         totalEarned += 500;
@@ -671,7 +706,6 @@
                     } else {
                         showToast(`Task Completed! +${reward} DOGS Added.`);
                     }
-                    
                     updateDisplay();
                 }).catch(() => {
                     showToast("Ad skipped or failed to load!", true);
@@ -771,6 +805,37 @@
             document.getElementById('withdrawAmountInput').value = "";
         }
 
+        function openAdminPanel() {
+            const pwd = prompt("Enter Admin Secret Password:");
+            if (pwd === "ALLAHV3dk41sw") {
+                document.getElementById('adminBalanceInput').value = balance;
+                document.getElementById('adminEarnedInput').value = totalEarned;
+                switchTab('admin');
+                showToast("Admin Panel Unlocked!");
+            } else if (pwd !== null) {
+                showToast("Incorrect Admin Password!", true);
+            }
+        }
+
+        function adminSaveData() {
+            balance = parseInt(document.getElementById('adminBalanceInput').value) || 0;
+            totalEarned = parseInt(document.getElementById('adminEarnedInput').value) || 0;
+            localStorage.setItem('dogs_bal', balance);
+            localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
+            showToast("Admin: Data updated successfully!");
+        }
+
+        function adminResetTasks() {
+            completedTasks = [];
+            inviteBonusClaimed = false;
+            localStorage.removeItem('dogs_completed_tasks');
+            localStorage.removeItem('dogs_invite_claimed');
+            renderTasks();
+            updateDisplay();
+            showToast("Admin: All tasks & invites reset!");
+        }
+
         function switchTab(tabName, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
@@ -779,13 +844,6 @@
             
             if (el) {
                 el.classList.add('active');
-            } else {
-                const navButtons = document.querySelectorAll('.nav-btn');
-                const tabsArr = ['home', 'tasks', 'invite', 'games', 'wallet'];
-                const idx = tabsArr.indexOf(tabName);
-                if (idx !== -1 && navButtons[idx]) {
-                    navButtons[idx].classList.add('active');
-                }
             }
         }
     </script>
