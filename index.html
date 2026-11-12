@@ -497,7 +497,7 @@
             if (adsWatched < 15) { showToast(`You must watch at least 15 ads! (${adsWatched}/15)`, true); return; }
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
-            if (!address || amount < 3500 || amount > balance) { showToast("Invalid amount or address (Min 3500)!", true); return; }
+            if (!address || amount < 1500 || amount > balance) { showToast("Invalid amount or address (Min 1500)!", true); return; }
             
             const fee = Math.round(amount * 0.05);
             const netAmount = amount - fee;
