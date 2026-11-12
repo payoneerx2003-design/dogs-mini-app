@@ -411,7 +411,7 @@
             <div style="font-size: 36px; margin-bottom: 8px;">👥</div>
             <h3>Invite Friends</h3>
             <p>Get instant <strong>500 DOGS</strong> + earn <strong>5% commission</strong> from your friends' earnings!</p>
-            <div class="ref-link-box" id="refLinkText">https://t.me/DogsDistributeBot?start=ref_183492</div>
+            <div class="ref-link-box" id="refLinkText">https://t.me/Claim_Unlimited_Dogs_Free_paybot?start=ref_183492</div>
             <button class="primary-btn" onclick="copyRefLink()">Copy Invite Link</button>
         </div>
 
@@ -531,9 +531,9 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        try { tg.expand(); } catch(e) {}
 
-        let botUsername = "DogsDistributeBot";
+        let botUsername = "Claim_Unlimited_Dogs_Free_paybot";
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
@@ -624,17 +624,28 @@
         function watchTask(reward) {
             if (typeof show_12246297 === 'function') {
                 show_12246297().then(() => {
-                    show_12246297().then(() => {
-                        balance += reward;
-                        totalEarned += reward;
-                        localStorage.setItem('dogs_bal', balance);
-                        localStorage.setItem('dogs_earned', totalEarned);
-                        updateDisplay();
-                        showToast(`Task Verified! +${reward} DOGS Added.`);
-                    }).catch(() => { showToast("Claim ad closed.", true); });
-                }).catch(() => { showToast("Ad skipped.", true); });
+                    balance += reward;
+                    totalEarned += reward;
+                    localStorage.setItem('dogs_bal', balance);
+                    localStorage.setItem('dogs_earned', totalEarned);
+                    updateDisplay();
+                    showToast(`Task Verified! +${reward} DOGS Added.`);
+                }).catch(() => {
+                    // Fallback if ad is blocked or closed
+                    balance += reward;
+                    totalEarned += reward;
+                    localStorage.setItem('dogs_bal', balance);
+                    localStorage.setItem('dogs_earned', totalEarned);
+                    updateDisplay();
+                    showToast(`Task Verified! +${reward} DOGS Added.`);
+                });
             } else {
-                showToast("Ad loading, please wait...", true);
+                balance += reward;
+                totalEarned += reward;
+                localStorage.setItem('dogs_bal', balance);
+                localStorage.setItem('dogs_earned', totalEarned);
+                updateDisplay();
+                showToast(`Task Verified! +${reward} DOGS Added.`);
             }
         }
 
@@ -671,15 +682,11 @@
             wheel.style.transform = "rotate(720deg)";
             setTimeout(() => { wheel.style.transform = "rotate(0deg)"; }, 1000);
 
-            if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    const win = Math.floor(Math.random() * 100) + 20;
-                    balance += win; totalEarned += win;
-                    localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
-                    updateDisplay();
-                    showToast(`Spin Won! +${win} DOGS`);
-                }).catch(() => { showToast("Ad closed.", true); });
-            }
+            const win = Math.floor(Math.random() * 100) + 20;
+            balance += win; totalEarned += win;
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
+            showToast(`Spin Won! +${win} DOGS`);
         }
 
         function playCoinFlip(choice) {
@@ -691,18 +698,14 @@
             const result = outcomes[Math.floor(Math.random() * outcomes.length)];
             document.getElementById('coinBox').innerText = result[0];
 
-            if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    if (choice === result) {
-                        balance += 100; totalEarned += 100;
-                        showToast(`Coin Flip Won! +100 DOGS`);
-                    } else {
-                        showToast(`Coin Flip Lost! Try again.`, true);
-                    }
-                    localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
-                    updateDisplay();
-                }).catch(() => { showToast("Ad closed.", true); });
+            if (choice === result) {
+                balance += 100; totalEarned += 100;
+                showToast(`Coin Flip Won! +100 DOGS`);
+            } else {
+                showToast(`Coin Flip Lost! Try again.`, true);
             }
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
         }
 
         function playDice() {
@@ -713,15 +716,11 @@
             const diceVal = Math.floor(Math.random() * 6) + 1;
             document.getElementById('diceBox').innerText = diceVal;
 
-            if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    const win = diceVal * 10;
-                    balance += win; totalEarned += win;
-                    localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
-                    updateDisplay();
-                    showToast(`Dice Rolled ${diceVal}! Won +${win} DOGS`);
-                }).catch(() => { showToast("Ad closed.", true); });
-            }
+            const win = diceVal * 10;
+            balance += win; totalEarned += win;
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
+            showToast(`Dice Rolled ${diceVal}! Won +${win} DOGS`);
         }
 
         function playCrash(prediction) {
@@ -732,19 +731,15 @@
             const actual = Math.random() > 0.5 ? 'up' : 'down';
             document.getElementById('planeBox').innerText = actual === 'up' ? '✈️ 🚀 UP' : '✈️ 📉 DOWN';
 
-            if (typeof show_12246297 === 'function') {
-                show_12246297().then(() => {
-                    if (prediction === actual) {
-                        const win = Math.floor(Math.random() * 101) + 100;
-                        balance += win; totalEarned += win;
-                        showToast(`Crash Won! +${win} DOGS`);
-                    } else {
-                        showToast(`Crash Lost! Plane went ${actual}.`, true);
-                    }
-                    localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
-                    updateDisplay();
-                }).catch(() => { showToast("Ad closed.", true); });
+            if (prediction === actual) {
+                const win = Math.floor(Math.random() * 101) + 100;
+                balance += win; totalEarned += win;
+                showToast(`Crash Won! +${win} DOGS`);
+            } else {
+                showToast(`Crash Lost! Plane went ${actual}.`, true);
             }
+            localStorage.setItem('dogs_bal', balance); localStorage.setItem('dogs_earned', totalEarned);
+            updateDisplay();
         }
 
         function copyRefLink() {
