@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Claim Free DOGS</title>
     
-    <!-- Monetag Main Tag Here -->
-    <script>
-        // Monetag script tag paste here
-    </script>
+    <!-- Monetag Main Tag -->
+    <script src='//libtl.com/sdk.js' data-zone='12246297' data-sdk='show_12246297'></script>
 
     <style>
         body {
@@ -54,10 +52,16 @@
 
     <script>
         function triggerAd() {
-            // Monetag ad format function code here
-            alert("Ad triggered!");
+            if(typeof show_12246297 === 'function') {
+                show_12246297().then(() => {
+                    alert("Ad watched successfully! Reward credited.");
+                }).catch((e) => {
+                    console.log(e);
+                });
+            } else {
+                alert("Ad loading, please try again in a moment.");
+            }
         }
     </script>
 </body>
 </html>
-
