@@ -65,6 +65,7 @@
         .admin-btn {
             background: #dc2626 !important;
             color: white !important;
+            display: none; /* Only show when unlocked or clicked */
         }
         .user-welcome {
             display: flex;
@@ -162,7 +163,7 @@
             display: block;
         }
 
-        .task-list {
+        .task-list, .history-list, .admin-req-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -170,7 +171,7 @@
             overflow-y: auto;
             padding-right: 2px;
         }
-        .task-card {
+        .task-card, .history-card, .req-card {
             background: #ffffff;
             border-radius: 16px;
             padding: 12px 14px;
@@ -338,6 +339,7 @@
             padding: 20px;
             border: 1px solid #f3f4f6;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
         }
         .input-group {
             margin-bottom: 14px;
@@ -368,8 +370,18 @@
             padding: 20px;
             border: 2px solid #dc2626;
             box-shadow: 0 4px 15px rgba(220, 38, 38, 0.1);
+            margin-bottom: 20px;
         }
         .admin-card h3 { color: #dc2626; margin-bottom: 10px; }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-approved { background: #ecfdf5; color: #059669; }
+        .status-rejected { background: #fef2f2; color: #dc2626; }
 
         /* Bottom Navigation Bar */
         .bottom-nav {
@@ -431,8 +443,8 @@
             <span>Free DOGS</span>
         </div>
         <div class="top-right-btns">
-            <button class="pill-btn admin-btn" onclick="openAdminPanel()">⚙️ Admin</button>
-            <button class="pill-btn" onclick="showToast('Support: @admin')">🎧 Support</button>
+            <button class="pill-btn admin-btn" id="adminNavBtn" onclick="switchTab('admin')">⚙️ Admin</button>
+            <button class="pill-btn" onclick="openAdminPrompt()">🔑 Login Admin</button>
         </div>
     </div>
 
@@ -563,25 +575,34 @@
             </div>
             <button class="primary-btn" onclick="requestWithdraw()">Request Withdrawal</button>
         </div>
+
+        <div class="section-title">Withdrawal History</div>
+        <div class="history-list" id="userHistoryList">
+            <p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No withdrawal history yet.</p>
+        </div>
     </div>
 
     <!-- ADMIN TAB -->
     <div id="tab-admin" class="tab-content">
-        <div class="section-title">🛠️ Master Admin Control Panel</div>
+        <div class="section-title">🛠️ Professional Master Admin Panel</div>
+        
         <div class="admin-card">
-            <p style="font-size: 12px; color: #4b5563; margin-bottom: 15px;">
-                Modify user statistics, balances, and reset task progresses instantly from here.
-            </p>
+            <h3>User Balance & Data Control</h3>
             <div class="input-group">
-                <label>Edit Balance (DOGS)</label>
+                <label>Edit User Balance (DOGS)</label>
                 <input type="number" id="adminBalanceInput">
             </div>
             <div class="input-group">
                 <label>Edit Total Earned (DOGS)</label>
                 <input type="number" id="adminEarnedInput">
             </div>
-            <button class="primary-btn" style="background:#dc2626; margin-bottom:10px;" onclick="adminSaveData()">Save Changes</button>
-            <button class="primary-btn" style="background:#4b5563;" onclick="adminResetTasks()">Reset All Completed Tasks</button>
+            <button class="primary-btn" style="background:#dc2626; margin-bottom:10px;" onclick="adminSaveData()">Save User Data</button>
+            <button class="primary-btn" style="background:#4b5563;" onclick="adminResetTasks()">Reset All Tasks</button>
+        </div>
+
+        <div class="section-title">Pending Withdrawal Requests</div>
+        <div class="admin-req-list" id="adminReqList">
+            <p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No pending requests.</p>
         </div>
     </div>
 
@@ -625,6 +646,7 @@
         let totalEarned = parseInt(localStorage.getItem('dogs_earned')) || 125;
         let completedTasks = JSON.parse(localStorage.getItem('dogs_completed_tasks')) || [];
         let inviteBonusClaimed = localStorage.getItem('dogs_invite_claimed') === 'true';
+        let withdrawHistory = JSON.parse(localStorage.getItem('dogs_withdraw_history')) || [];
 
         function updateDisplay() {
             document.getElementById('balanceAmount').innerText = balance;
@@ -645,6 +667,9 @@
             } else {
                 claimBtn.innerText = `Complete ${20 - count} More Tasks for +500 DOGS`;
             }
+
+            renderHistory();
+            renderAdminRequests();
         }
         updateDisplay();
 
@@ -656,6 +681,7 @@
             setTimeout(() => { t.style.display = 'none'; }, 2800);
         }
 
+        // Render 20 Tasks
         const taskListContainer = document.getElementById('twentyTasksList');
         function renderTasks() {
             taskListContainer.innerHTML = '';
@@ -781,6 +807,7 @@
             showToast("Invite link copied! Complete 20 tasks for +500 DOGS.");
         }
 
+        // Withdraw & History Logic
         function requestWithdraw() {
             const address = document.getElementById('walletAddressInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmountInput').value);
@@ -800,18 +827,58 @@
 
             balance -= amount;
             localStorage.setItem('dogs_bal', balance);
+
+            const newReq = {
+                id: Date.now(),
+                amount: amount,
+                address: address,
+                status: 'Pending',
+                date: new Date().toLocaleDateString()
+            };
+            withdrawHistory.unshift(newReq);
+            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+
             updateDisplay();
-            showToast("Withdrawal requested successfully! Processing in 24h.");
+            showToast("Withdrawal requested successfully!");
             document.getElementById('withdrawAmountInput').value = "";
         }
 
-        function openAdminPanel() {
+        function renderHistory() {
+            const historyList = document.getElementById('userHistoryList');
+            if (withdrawHistory.length === 0) {
+                historyList.innerHTML = `<p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No withdrawal history yet.</p>`;
+                return;
+            }
+            historyList.innerHTML = '';
+            withdrawHistory.forEach(item => {
+                let badgeClass = 'status-pending';
+                if (item.status === 'Approved') badgeClass = 'status-approved';
+                if (item.status === 'Rejected') badgeClass = 'status-rejected';
+
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div>
+                        <h4 style="font-size: 14px; color: #1f2937;">${item.amount} DOGS</h4>
+                        <p style="font-size: 11px; color: #6b7280;">To: ${item.address.substring(0, 10)}...</p>
+                    </div>
+                    <div>
+                        <span class="status-badge ${badgeClass}">${item.status}</span>
+                    </div>
+                `;
+                historyList.appendChild(card);
+            });
+        }
+
+        // Admin Panel Functions
+        function openAdminPrompt() {
             const pwd = prompt("Enter Admin Secret Password:");
             if (pwd === "ALLAHV3dk41sw") {
                 document.getElementById('adminBalanceInput').value = balance;
                 document.getElementById('adminEarnedInput').value = totalEarned;
+                document.getElementById('adminNavBtn').style.display = 'block';
                 switchTab('admin');
-                showToast("Admin Panel Unlocked!");
+                showToast("Admin Panel Unlocked Successfully!");
             } else if (pwd !== null) {
                 showToast("Incorrect Admin Password!", true);
             }
@@ -823,7 +890,7 @@
             localStorage.setItem('dogs_bal', balance);
             localStorage.setItem('dogs_earned', totalEarned);
             updateDisplay();
-            showToast("Admin: Data updated successfully!");
+            showToast("Admin: User data updated!");
         }
 
         function adminResetTasks() {
@@ -833,7 +900,52 @@
             localStorage.removeItem('dogs_invite_claimed');
             renderTasks();
             updateDisplay();
-            showToast("Admin: All tasks & invites reset!");
+            showToast("Admin: All tasks reset!");
+        }
+
+        function renderAdminRequests() {
+            const reqList = document.getElementById('adminReqList');
+            const pendingReqs = withdrawHistory.filter(item => item.status === 'Pending');
+
+            if (pendingReqs.length === 0) {
+                reqList.innerHTML = `<p style="font-size: 12px; color: #9ca3af; text-align:center; padding: 10px;">No pending withdrawal requests.</p>`;
+                return;
+            }
+
+            reqList.innerHTML = '';
+            pendingReqs.forEach(req => {
+                const card = document.createElement('div');
+                card.className = 'req-card';
+                card.innerHTML = `
+                    <div>
+                        <h4 style="font-size: 14px; color: #1f2937;">${req.amount} DOGS</h4>
+                        <p style="font-size: 11px; color: #6b7280; word-break:break-all;">Wallet: ${req.address}</p>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="watch-btn" style="background:#10b981; color:white; padding:6px 10px;" onclick="updateWithdrawStatus(${req.id}, 'Approved')">Approve</button>
+                        <button class="watch-btn" style="background:#ef4444; color:white; padding:6px 10px;" onclick="updateWithdrawStatus(${req.id}, 'Rejected')">Cancel</button>
+                    </div>
+                `;
+                reqList.appendChild(card);
+            });
+        }
+
+        function updateWithdrawStatus(id, newStatus) {
+            const req = withdrawHistory.find(item => item.id === id);
+            if (!req) return;
+
+            req.status = newStatus;
+            if (newStatus === 'Rejected') {
+                // Refund balance if cancelled
+                balance += req.amount;
+                localStorage.setItem('dogs_bal', balance);
+                showToast("Withdrawal rejected & amount refunded to user.");
+            } else {
+                showToast("Withdrawal request approved!");
+            }
+
+            localStorage.setItem('dogs_withdraw_history', JSON.stringify(withdrawHistory));
+            updateDisplay();
         }
 
         function switchTab(tabName, el) {
